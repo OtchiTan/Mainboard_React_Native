@@ -1,4 +1,4 @@
-package com.mainboard;
+package com.mainboard.module;
 
 import android.util.Log;
 
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequestModule extends ReactContextBaseJavaModule {
-    HttpRequestModule(ReactApplicationContext context) {
+    public HttpRequestModule(ReactApplicationContext context) {
         super(context);
     }
 

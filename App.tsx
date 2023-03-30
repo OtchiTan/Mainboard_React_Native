@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Text,
   useColorScheme,
 } from 'react-native';
 
@@ -51,7 +52,7 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      {page}
+      {page ? page : <Text>Vérification de l'état du serveur</Text>}
     </SafeAreaView>
   );
 }
