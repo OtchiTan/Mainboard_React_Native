@@ -30,13 +30,13 @@ export default ({item}: IAppLayout) => {
           backgroundColor: pressed ? 'black' : 'white',
           margin: 10,
           width: width * 0.4,
+          ...styles.item,
         },
       ]}>
       <View style={styles.container}>
-        <Image
-          source={require('./minecraft.png')}
-          style={{width: 50, height: 50}}
-        />
+        {item.image && (
+          <Image source={{uri: item.image}} style={styles.image} />
+        )}
         <Text>{item.name}</Text>
       </View>
     </Pressable>
@@ -45,9 +45,19 @@ export default ({item}: IAppLayout) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
     margin: 5,
   },
-  pressable: {},
+  item: {
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+  },
+  image: {
+    width: 50,
+    height: 50,
+  },
 });

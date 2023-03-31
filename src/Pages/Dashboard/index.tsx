@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {FlatList} from 'react-native';
 import Application from '../../Models/Application';
 import AppLayout from './Components/AppLayout';
 
