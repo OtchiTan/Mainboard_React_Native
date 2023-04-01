@@ -5,43 +5,25 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
 } from 'react-native';
-
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {NativeModules} from 'react-native';
-import Application from './src/Models/Application';
-import Dashboard from './src/Pages/Dashboard';
+import Router, {RouterContext} from './src/Router';
+import CheckServer from './src/Pages/CheckServer';
 import StartServer from './src/Pages/StartServer';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const [page, setPage] = useState<JSX.Element>(<CheckServer />);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
-  const [page, setPage] = useState<JSX.Element>();
-
-  useEffect(() => {
-    const {HttpRequestModule} = NativeModules;
-    HttpRequestModule.get(
-      'http://otchi.ovh:3000/',
-      (result: string) => {
-        const applications = JSON.parse(result).applications as Application[];
-        setPage(<Dashboard apps={applications} />);
-      },
-      () => {
-        setPage(<StartServer />);
-      },
-    );
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -49,7 +31,9 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      {page ? page : <Text>Vérification de l'état du serveur</Text>}
+      <RouterContext.Provider value={{page, setPage}}>
+        <Router />
+      </RouterContext.Provider>
     </SafeAreaView>
   );
 }
