@@ -1,13 +1,13 @@
 import {useContext, useEffect, useState} from 'react';
 import {Button, NativeModules, Text, View} from 'react-native';
 import Application from '../../Models/Application';
-import {RouterContext} from '../../Router';
+import AppContext from '../../AppContext';
 import Dashboard from '../Dashboard';
 
-export default (): JSX.Element => {
+export default ({navigation}: any): JSX.Element => {
   const [tryWake, setTryWake] = useState<number>(0);
   const [isWakeCalled, setIsWakeCalled] = useState<boolean>(false);
-  let {setPage} = useContext(RouterContext);
+  let {setApps} = useContext(AppContext);
 
   const startServer = () => {
     if (!isWakeCalled) {
@@ -28,13 +28,21 @@ export default (): JSX.Element => {
       HttpRequestModule.get(
         'http://otchi.ovh:3000/',
         (result: string) => {
-          const applications = JSON.parse(result).applications as Application[];
-          setPage(<Dashboard apps={applications} />);
+          if (typeof setApps !== 'undefined') {
+            const applications = JSON.parse(result)
+              .applications as Application[];
+            setApps(applications);
+            navigation.navigate('Dashboard');
+          }
         },
         () => setTimeout(() => setTryWake(tryWake + 1), 1000),
       );
     }
   }, [isWakeCalled, tryWake]);
 
-  return <Button title={'Start Server'} onPress={startServer} />;
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Button title={'Start Server'} onPress={startServer} />
+    </View>
+  );
 };

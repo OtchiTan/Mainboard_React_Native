@@ -13,28 +13,42 @@ import {
   useColorScheme,
 } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import Router, {RouterContext} from './src/Router';
+import Application from './src/Models/Application';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import AppContext from './src/AppContext';
+import ApplicationPage from './src/Pages/Application';
+import Dashboard from './src/Pages/Dashboard';
 import CheckServer from './src/Pages/CheckServer';
+import Login from './src/Pages/Login';
 import StartServer from './src/Pages/StartServer';
+
+const Stack = createNativeStackNavigator();
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-  const [page, setPage] = useState<JSX.Element>(<CheckServer />);
+  const [apps, setApps] = useState<Application[]>([]);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <RouterContext.Provider value={{page, setPage}}>
-        <Router />
-      </RouterContext.Provider>
-    </SafeAreaView>
+    <AppContext.Provider value={{apps, setApps}}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="CheckServer"
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+          <Stack.Screen name="CheckServer" component={CheckServer} />
+          <Stack.Screen name="StartServer" component={StartServer} />
+          <Stack.Screen name="Application" component={ApplicationPage} />
+          <Stack.Screen name="Login" component={Login} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppContext.Provider>
   );
 }
 

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {
   Button,
   Dimensions,
@@ -13,18 +13,19 @@ import Application from '../../../Models/Application';
 
 type IAppLayout = {
   item: Application;
+  onPress: (app: Application) => void;
 };
 
-export default ({item}: IAppLayout) => {
-  const onPress = () => {
-    console.log('Press');
+export default ({item, onPress}: IAppLayout) => {
+  const onPressCallback = () => {
+    onPress(item);
   };
 
   var width = Dimensions.get('window').width;
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={onPressCallback}
       style={({pressed}) => [
         {
           backgroundColor: pressed ? 'black' : 'white',
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   item: {
-    height: 50,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'stretch',
   },
