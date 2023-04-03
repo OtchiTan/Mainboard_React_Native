@@ -10,16 +10,14 @@ export default ({navigation}: any): JSX.Element => {
   let {setApps} = useContext(AppContext);
 
   const startServer = () => {
-    if (!isWakeCalled) {
-      setIsWakeCalled(true);
-      const {WakeOnLanModule} = NativeModules;
-      WakeOnLanModule.wake(
-        'D8:97:BA:81:6A:9B',
-        '88.138.52.95',
-        9,
-        (error: string) => console.log(error),
-      );
-    }
+    setIsWakeCalled(true);
+    const {WakeOnLanModule} = NativeModules;
+    WakeOnLanModule.wake(
+      'D8:97:BA:81:6A:9B',
+      '88.138.52.95',
+      9,
+      (error: string) => console.log(error),
+    );
   };
 
   useEffect(() => {
@@ -35,14 +33,21 @@ export default ({navigation}: any): JSX.Element => {
             navigation.navigate('Dashboard');
           }
         },
-        () => setTimeout(() => setTryWake(tryWake + 1), 1000),
+        () => {
+          startServer();
+          setTimeout(() => setTryWake(tryWake + 1), 1000);
+        },
       );
     }
   }, [isWakeCalled, tryWake]);
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Button title={'Start Server'} onPress={startServer} />
+      {isWakeCalled ? (
+        <Text>Server Is Starting</Text>
+      ) : (
+        <Button title={'Start Server'} onPress={startServer} />
+      )}
     </View>
   );
 };

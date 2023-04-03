@@ -1,12 +1,9 @@
-import {useContext, useState} from 'react';
 import {
-  Button,
   Dimensions,
   Image,
   Pressable,
   StyleSheet,
   Text,
-  TouchableHighlight,
   View,
 } from 'react-native';
 import Application from '../../../Models/Application';
@@ -38,7 +35,9 @@ export default ({item, onPress}: IAppLayout) => {
         {item.image && (
           <Image source={{uri: item.image}} style={styles.image} />
         )}
-        <Text>{item.name}</Text>
+        <Text>
+          {item.name} | {item.isOn ? 'On' : 'Off'}
+        </Text>
       </View>
     </Pressable>
   );
