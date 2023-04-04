@@ -40,9 +40,11 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
                 },
                 error -> {
                     error.printStackTrace();
-                    if (error.networkResponse == null) {
-                        onError.invoke();
-                    }
+                    if (error.networkResponse == null)
+                        onError.invoke("TIMEDOUT");
+
+                    else if (error.networkResponse.statusCode == 401)
+                        onError.invoke("UNAUTHORIZED");
                 }
         ) {
             @Override

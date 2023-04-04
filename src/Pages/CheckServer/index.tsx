@@ -2,6 +2,7 @@ import {useContext, useEffect} from 'react';
 import {NativeModules, Text, View} from 'react-native';
 import Application from '../../Models/Application';
 import AppContext from '../../AppContext';
+import {HttpErrorCause} from '../../Utils/Declarations';
 
 export default ({navigation}: any): JSX.Element => {
   let {setApps} = useContext(AppContext);
@@ -17,7 +18,10 @@ export default ({navigation}: any): JSX.Element => {
           navigation.navigate('Dashboard');
         }
       },
-      () => navigation.navigate('StartServer'),
+      (error: HttpErrorCause) => {
+        if (error === 'TIMEDOUT') navigation.navigate('StartServer');
+        else if (error === 'UNAUTHORIZED') navigation.navigate('Login');
+      },
     );
   }, []);
 

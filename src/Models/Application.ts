@@ -4,4 +4,5 @@ export default class Application {
   image = '';
   isOn = false;
   startTime: Date | null = null;
+  isContainer = true;
 }

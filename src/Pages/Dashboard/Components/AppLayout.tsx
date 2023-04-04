@@ -26,8 +26,9 @@ export default ({item, onPress}: IAppLayout) => {
       style={({pressed}) => [
         {
           backgroundColor: pressed ? 'black' : 'white',
-          margin: 10,
-          width: width * 0.4,
+          borderColor: item.isOn ? 'green' : 'red',
+          borderWidth: item.isContainer ? 1 : 0,
+          width: width * 0.45,
           ...styles.item,
         },
       ]}>
@@ -35,9 +36,7 @@ export default ({item, onPress}: IAppLayout) => {
         {item.image && (
           <Image source={{uri: item.image}} style={styles.image} />
         )}
-        <Text>
-          {item.name} | {item.isOn ? 'On' : 'Off'}
-        </Text>
+        <Text>{item.name}</Text>
       </View>
     </Pressable>
   );
@@ -49,12 +48,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    margin: 5,
   },
   item: {
-    height: 60,
+    height: 70,
     justifyContent: 'center',
     alignItems: 'stretch',
+    margin: 10,
+    borderRadius: 100,
   },
   image: {
     width: 50,
