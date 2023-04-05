@@ -1,11 +1,15 @@
 import {View, Text, StyleSheet, NativeModules} from 'react-native';
-import {useEffect} from 'react';
+import {useEffect, useContext} from 'react';
+import AppContext from '../../../../AppContext';
 
 export default () => {
+  const {authToken} = useContext(AppContext);
+
   useEffect(() => {
     const {HttpRequestModule} = NativeModules;
     HttpRequestModule.get(
       'http://otchi.ovh:3000/',
+      authToken,
       (response: string) => {},
       () => {},
     );

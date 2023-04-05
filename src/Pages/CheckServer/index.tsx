@@ -1,28 +1,34 @@
 import {useContext, useEffect} from 'react';
-import {NativeModules, Text, View} from 'react-native';
+import {Text, View, BackHandler} from 'react-native';
 import Application from '../../Models/Application';
 import AppContext from '../../AppContext';
-import {HttpErrorCause} from '../../Utils/Declarations';
+import AxiosClient from '../../Utils/AxiosClient';
+import {getAuthHeader} from '../../Utils/AuthStorage';
 
 export default ({navigation}: any): JSX.Element => {
-  let {setApps} = useContext(AppContext);
+  let {setApps, onNeedLogin} = useContext(AppContext);
 
   useEffect(() => {
-    const {HttpRequestModule} = NativeModules;
-    HttpRequestModule.get(
-      'http://otchi.ovh:3000/',
-      (result: string) => {
-        if (typeof setApps !== 'undefined') {
-          const applications = JSON.parse(result).applications as Application[];
+    const fetchApps = async () => {
+      AxiosClient.get('', {headers: await getAuthHeader()})
+        .then(res => {
+          const applications = res.data.applications as Application[];
           setApps(applications);
           navigation.navigate('Dashboard');
-        }
-      },
-      (error: HttpErrorCause) => {
-        if (error === 'TIMEDOUT') navigation.navigate('StartServer');
-        else if (error === 'UNAUTHORIZED') navigation.navigate('Login');
-      },
-    );
+        })
+        .catch(err => {
+          console.log(JSON.stringify(err, null, 2));
+
+          if (err.response && err.response.status === 401)
+            onNeedLogin(navigation);
+          else navigation.navigate('StartServer');
+        });
+    };
+    fetchApps();
+  }, []);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => true);
   }, []);
 
   return (

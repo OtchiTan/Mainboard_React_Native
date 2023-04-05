@@ -1,13 +1,14 @@
 import {useContext, useEffect, useState} from 'react';
-import {Button, NativeModules, Text, View} from 'react-native';
+import {Button, NativeModules, Text, View, BackHandler} from 'react-native';
 import Application from '../../Models/Application';
 import AppContext from '../../AppContext';
-import Dashboard from '../Dashboard';
+import AxiosClient from '../../Utils/AxiosClient';
+import {getAuthHeader} from '../../Utils/AuthStorage';
 
 export default ({navigation}: any): JSX.Element => {
   const [tryWake, setTryWake] = useState<number>(0);
   const [isWakeCalled, setIsWakeCalled] = useState<boolean>(false);
-  let {setApps} = useContext(AppContext);
+  let {setApps, onNeedLogin} = useContext(AppContext);
 
   const startServer = () => {
     setIsWakeCalled(true);
@@ -21,25 +22,32 @@ export default ({navigation}: any): JSX.Element => {
   };
 
   useEffect(() => {
-    if (isWakeCalled) {
-      const {HttpRequestModule} = NativeModules;
-      HttpRequestModule.get(
-        'http://otchi.ovh:3000/',
-        (result: string) => {
-          if (typeof setApps !== 'undefined') {
-            const applications = JSON.parse(result)
-              .applications as Application[];
-            setApps(applications);
-            navigation.navigate('Dashboard');
-          }
-        },
-        () => {
-          startServer();
-          setTimeout(() => setTryWake(tryWake + 1), 1000);
-        },
-      );
-    }
+    const checkServer = async () => {
+      if (isWakeCalled) {
+        AxiosClient.get('', {headers: await getAuthHeader()})
+          .then(res => {
+            if (typeof setApps !== 'undefined') {
+              const applications = res.data.applications as Application[];
+              setApps(applications);
+              navigation.navigate('Dashboard');
+            }
+          })
+          .catch(error => {
+            if (error.response.status === 401) {
+              onNeedLogin(navigation);
+            } else {
+              startServer();
+              setTimeout(() => setTryWake(tryWake + 1), 1000);
+            }
+          });
+      }
+    };
+    checkServer();
   }, [isWakeCalled, tryWake]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => true);
+  }, []);
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

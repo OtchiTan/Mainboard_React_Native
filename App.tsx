@@ -7,7 +7,7 @@
 
 import React, {useState} from 'react';
 import Application from './src/Models/Application';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AppContext from './src/AppContext';
 import Dashboard from './src/Pages/Dashboard';
@@ -16,15 +16,31 @@ import Login from './src/Pages/Login';
 import StartServer from './src/Pages/StartServer';
 import ContainerApplication from './src/Pages/ContainerApplication';
 import CustomApplication from './src/Pages/CustomApplication';
+import {setToken} from './src/Utils/AuthStorage';
 
 const Stack = createNativeStackNavigator();
 
 function App(): JSX.Element {
   const [apps, setApps] = useState<Application[]>([]);
+  const [authToken, setAuthToken] = useState<string>('');
+
+  const setNewAuthToken = async (newToken: string) => {
+    await setToken(newToken);
+    setAuthToken(newToken);
+  };
 
   return (
-    <AppContext.Provider value={{apps, setApps}}>
-      <NavigationContainer>
+    <NavigationContainer>
+      <AppContext.Provider
+        value={{
+          apps,
+          setApps,
+          onNeedLogin(navigation: any) {
+            navigation.navigate('Login');
+          },
+          authToken,
+          setAuthToken: setNewAuthToken,
+        }}>
         <Stack.Navigator
           initialRouteName="CheckServer"
           screenOptions={{
@@ -43,8 +59,8 @@ function App(): JSX.Element {
           />
           <Stack.Screen name="Login" component={Login} />
         </Stack.Navigator>
-      </NavigationContainer>
-    </AppContext.Provider>
+      </AppContext.Provider>
+    </NavigationContainer>
   );
 }
 

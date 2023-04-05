@@ -11,12 +11,14 @@ import Application from '../../Models/Application';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
+import AxiosClient from '../../Utils/AxiosClient';
+import {getAuthHeader} from '../../Utils/AuthStorage';
 
 export default ({route, navigation}: any): JSX.Element => {
   const params = route.params as {app: Application};
   const [app, setApp] = useState<Application>(params.app);
   const [isStarting, setIsStarting] = useState<boolean>(false);
-  const {setApps} = useContext(AppContext);
+  const {setApps, authToken} = useContext(AppContext);
   const [actualDate, setActualDate] = useState<Date>(new Date());
 
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -27,20 +29,20 @@ export default ({route, navigation}: any): JSX.Element => {
   const startApp = () => {
     if (!isStarting) {
       setIsStarting(true);
-      const {HttpRequestModule} = NativeModules;
 
-      HttpRequestModule.get(
-        `http://otchi.ovh:3000/${app.isOn ? 'stop' : 'start'}App/${app.id}`,
-        (result: string) => {
-          setIsStarting(false);
-          const {apps, updatedApp} = JSON.parse(result) as StartAppResponse;
-          setApp(updatedApp);
-          setApps(apps);
-        },
-        () => {
-          console.log('Error');
-        },
-      );
+      const handleServer = async () => {
+        AxiosClient.get(`${app.isOn ? 'stop' : 'start'}App/${app.id}`, {
+          headers: await getAuthHeader(),
+        })
+          .then(res => {
+            setIsStarting(false);
+            const {apps, updatedApp} = res.data as StartAppResponse;
+            setApp(updatedApp);
+            setApps(apps);
+          })
+          .catch(err => console.log('Error'));
+      };
+      handleServer();
 
       setApp(app => {
         return {
@@ -62,7 +64,7 @@ export default ({route, navigation}: any): JSX.Element => {
 
   if (app.startTime) {
     const startTime = new Date(app.startTime).getTime();
-    const actualTime = new Date().getTime();
+    const actualTime = actualDate.getTime();
 
     const lifeTime = Math.round((actualTime - startTime) / 60000);
     if (lifeTime < 1) lifeTimeText = 'En ligne depuis <1 min';

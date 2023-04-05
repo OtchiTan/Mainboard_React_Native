@@ -1,5 +1,16 @@
-import {View, StyleSheet, TextInput, Button} from 'react-native';
-import {useState, useRef} from 'react';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Button,
+  NativeModules,
+  BackHandler,
+} from 'react-native';
+import {useState, useRef, useContext, useEffect} from 'react';
+import {HttpErrorCause} from '../../Utils/Declarations';
+import AppContext from '../../AppContext';
+import AxiosClient from '../../Utils/AxiosClient';
+import {getAuthHeader} from '../../Utils/AuthStorage';
 
 type LoginForm = {
   email: string;
@@ -11,14 +22,21 @@ export default ({navigation}: any): JSX.Element => {
     email: '',
     password: '',
   });
+
   const passwordInput = useRef<TextInput>(null);
+  const {setAuthToken} = useContext(AppContext);
 
-  const handleSubmit = () => {
-    console.log(loginForm);
-  };
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => true);
+  }, []);
 
-  const setPasswordFocus = () => {
-    console.log(passwordInput.current?.focus());
+  const handleSubmit = async () => {
+    AxiosClient.post('auth/login', loginForm, {headers: await getAuthHeader()})
+      .then(res => {
+        setAuthToken(res.data.authToken);
+        navigation.navigate('Dashboard');
+      })
+      .catch(err => console.log(err));
   };
 
   return (
@@ -30,7 +48,7 @@ export default ({navigation}: any): JSX.Element => {
             return {...loginForm, email};
           })
         }
-        onSubmitEditing={setPasswordFocus}
+        onSubmitEditing={passwordInput.current?.focus}
       />
       <TextInput
         placeholder="Password"

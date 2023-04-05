@@ -6,6 +6,15 @@ import CheckServer from './Pages/CheckServer';
 type RouterContextType = {
   apps: Application[];
   setApps: (apps: Application[]) => void;
+  onNeedLogin: (navigation: any) => void;
+  authToken: string;
+  setAuthToken: (newToken: string) => void;
 };
 
-export default createContext<RouterContextType>({apps: [], setApps(apps) {}});
+export default createContext<RouterContextType>({
+  apps: [],
+  setApps(apps) {},
+  onNeedLogin(navigation) {},
+  authToken: '',
+  setAuthToken(newToken) {},
+});

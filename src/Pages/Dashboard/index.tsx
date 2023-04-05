@@ -1,11 +1,31 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FlatList} from 'react-native';
 import AppContext from '../../AppContext';
 import Application from '../../Models/Application';
+import {getAuthHeader} from '../../Utils/AuthStorage';
+import AxiosClient from '../../Utils/AxiosClient';
 import AppLayout from './Components/AppLayout';
 
 export default ({navigation}: any): JSX.Element => {
-  const {apps} = useContext(AppContext);
+  const {apps, setApps, onNeedLogin, authToken} = useContext(AppContext);
+
+  if (apps.length === 0) {
+    useEffect(() => {
+      const fetchApps = async () => {
+        AxiosClient.get('', {headers: await getAuthHeader()})
+          .then(res => {
+            const applications = res.data.applications as Application[];
+            setApps(applications);
+            navigation.navigate('Dashboard');
+          })
+          .catch(err => {
+            if (err.response.status === 401) onNeedLogin(navigation);
+            else navigation.navigate('StartServer');
+          });
+      };
+      fetchApps();
+    }, []);
+  }
 
   const onItemPress = (app: Application) => {
     if (app.isContainer) navigation.navigate('ContainerApplication', {app});
