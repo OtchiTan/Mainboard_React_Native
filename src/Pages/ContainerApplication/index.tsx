@@ -1,23 +1,16 @@
-import {
-  BackHandler,
-  Button,
-  Image,
-  Text,
-  View,
-  NativeModules,
-} from 'react-native';
+import {BackHandler, Button, Image, Text, View} from 'react-native';
 import {useState, useContext} from 'react';
 import Application from '../../Models/Application';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
-import AxiosClient from '../../Utils/HttpClient';
+import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
 
 export default ({route, navigation}: any): JSX.Element => {
   const params = route.params as {app: Application};
   const [app, setApp] = useState<Application>(params.app);
   const [isStarting, setIsStarting] = useState<boolean>(false);
-  const {setApps, authToken} = useContext(AppContext);
+  const {setApps, onNeedLogin} = useContext(AppContext);
   const [actualDate, setActualDate] = useState<Date>(new Date());
 
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -30,16 +23,19 @@ export default ({route, navigation}: any): JSX.Element => {
       setIsStarting(true);
 
       const handleServer = async () => {
-        // AxiosClient.get(`${app.isOn ? 'stop' : 'start'}App/${app.id}`, {
-        //   headers: await getAuthHeader(),
-        // })
-        //   .then(res => {
-        //     setIsStarting(false);
-        //     const {apps, updatedApp} = res.data as StartAppResponse;
-        //     setApp(updatedApp);
-        //     setApps(apps);
-        //   })
-        //   .catch(err => console.log('Error'));
+        const httpClient = new HttpClient<StartAppResponse>();
+        httpClient
+          .get(`${app.isOn ? 'stop' : 'start'}App/${app.id}`)
+          .then(({apps, updatedApp}) => {
+            setApps(apps);
+            setApp(updatedApp);
+            setIsStarting(false);
+          })
+          .catch(error => {
+            if ((error as HttpErrorCause) === 'UNAUTHORIZED')
+              onNeedLogin(navigation);
+            else navigation.navigate('StartServer');
+          });
       };
       handleServer();
 

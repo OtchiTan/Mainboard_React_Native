@@ -9,10 +9,15 @@ import {
 import {useState, useRef, useContext, useEffect} from 'react';
 import AppContext from '../../AppContext';
 import AxiosClient from '../../Utils/HttpClient';
+import HttpClient from '../../Utils/HttpClient';
 
 type LoginForm = {
   email: string;
   password: string;
+};
+
+type ResponseAPI = {
+  authToken: string;
 };
 
 export default ({navigation}: any): JSX.Element => {
@@ -29,12 +34,16 @@ export default ({navigation}: any): JSX.Element => {
   }, []);
 
   const handleSubmit = async () => {
-    // AxiosClient.post('auth/login', loginForm, {headers: await getAuthHeader()})
-    //   .then(res => {
-    //     setAuthToken(res.data.authToken);
-    //     navigation.navigate('Dashboard');
-    //   })
-    //   .catch(err => console.log(err));
+    const httpClient = new HttpClient<ResponseAPI>();
+    httpClient
+      .post('auth/login', loginForm)
+      .then(({authToken}) => {
+        setAuthToken(authToken);
+        navigation.navigate('Dashboard');
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   return (

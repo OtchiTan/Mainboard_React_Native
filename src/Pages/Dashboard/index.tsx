@@ -2,29 +2,33 @@ import React, {useContext, useEffect} from 'react';
 import {FlatList} from 'react-native';
 import AppContext from '../../AppContext';
 import Application from '../../Models/Application';
-import AxiosClient from '../../Utils/HttpClient';
 import AppLayout from './Components/AppLayout';
+import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
+
+type ResponseAPI = {
+  applications: Application[];
+};
 
 export default ({navigation}: any): JSX.Element => {
   const {apps, setApps, onNeedLogin, authToken} = useContext(AppContext);
-
-  if (apps.length === 0) {
-    useEffect(() => {
-      const fetchApps = async () => {
-        // AxiosClient.get('', {headers: await getAuthHeader()})
-        //   .then(res => {
-        //     const applications = res.data.applications as Application[];
-        //     setApps(applications);
-        //     navigation.navigate('Dashboard');
-        //   })
-        //   .catch(err => {
-        //     if (err.response.status === 401) onNeedLogin(navigation);
-        //     else navigation.navigate('StartServer');
-        //   });
-      };
-      fetchApps();
-    }, []);
-  }
+  useEffect(() => {
+    if (apps.length === 0) {
+      const httpClient = new HttpClient<ResponseAPI>();
+      httpClient
+        .get('')
+        .then(({applications}) => {
+          setApps(applications);
+          navigation.navigate('Dashboard');
+        })
+        .catch(error => {
+          if ((error as HttpErrorCause) === 'UNAUTHORIZED')
+            onNeedLogin(navigation);
+          else {
+            console.log('ERROR');
+          }
+        });
+    }
+  }, []);
 
   const onItemPress = (app: Application) => {
     if (app.isContainer) navigation.navigate('ContainerApplication', {app});

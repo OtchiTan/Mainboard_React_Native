@@ -15,7 +15,7 @@ export default class HttpClient<T> {
       Authorization: 'Bearer ',
     },
   };
-  baseUrl = 'https://api.otchi.ovh';
+  baseUrl = 'https://api.otchi.ovh/';
 
   constructor() {
     this.HttpRequestModule = NativeModules.HttpRequestModule;

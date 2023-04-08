@@ -1,18 +1,19 @@
 import {View, Text, StyleSheet, NativeModules} from 'react-native';
 import {useEffect, useContext} from 'react';
 import AppContext from '../../../../AppContext';
+import HttpClient from '../../../../Utils/HttpClient';
+
+type ResponseAPI = {};
 
 export default () => {
-  const {authToken} = useContext(AppContext);
+  const {authToken, onNeedLogin} = useContext(AppContext);
 
   useEffect(() => {
-    const {HttpRequestModule} = NativeModules;
-    HttpRequestModule.get(
-      'http://otchi.ovh:3000/',
-      authToken,
-      (response: string) => {},
-      () => {},
-    );
+    const httpClient = new HttpClient<ResponseAPI>();
+    httpClient
+      .get('')
+      .then(() => {})
+      .catch(error => {});
   }, []);
 
   return (
