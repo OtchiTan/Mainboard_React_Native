@@ -15,8 +15,3 @@ export async function setToken(newToken: string) {
     return error;
   }
 }
-
-export async function getAuthHeader() {
-  const token = await getToken();
-  if (typeof token === 'string') return {Authorization: `Bearer ${token}`};
-}

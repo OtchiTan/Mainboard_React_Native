@@ -2,8 +2,11 @@ import {useContext, useEffect, useState} from 'react';
 import {Button, NativeModules, Text, View, BackHandler} from 'react-native';
 import Application from '../../Models/Application';
 import AppContext from '../../AppContext';
-import AxiosClient from '../../Utils/AxiosClient';
-import {getAuthHeader} from '../../Utils/AuthStorage';
+import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
+
+type ResponseAPI = {
+  applications: Application[];
+};
 
 export default ({navigation}: any): JSX.Element => {
   const [tryWake, setTryWake] = useState<number>(0);
@@ -22,27 +25,23 @@ export default ({navigation}: any): JSX.Element => {
   };
 
   useEffect(() => {
-    const checkServer = async () => {
-      if (isWakeCalled) {
-        AxiosClient.get('', {headers: await getAuthHeader()})
-          .then(res => {
-            if (typeof setApps !== 'undefined') {
-              const applications = res.data.applications as Application[];
-              setApps(applications);
-              navigation.navigate('Dashboard');
-            }
-          })
-          .catch(error => {
-            if (error.response.status === 401) {
-              onNeedLogin(navigation);
-            } else {
-              startServer();
-              setTimeout(() => setTryWake(tryWake + 1), 1000);
-            }
-          });
-      }
-    };
-    checkServer();
+    if (isWakeCalled) {
+      const httpClient = new HttpClient<ResponseAPI>();
+      httpClient
+        .get('')
+        .then(({applications}) => {
+          setApps(applications);
+          navigation.navigate('Dashboard');
+        })
+        .catch(error => {
+          if ((error as HttpErrorCause) === 'UNAUTHORIZED')
+            onNeedLogin(navigation);
+          else {
+            startServer();
+            setTimeout(() => setTryWake(tryWake + 1), 1000);
+          }
+        });
+    }
   }, [isWakeCalled, tryWake]);
 
   useEffect(() => {

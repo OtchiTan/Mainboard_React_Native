@@ -11,8 +11,7 @@ import Application from '../../Models/Application';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
-import AxiosClient from '../../Utils/AxiosClient';
-import {getAuthHeader} from '../../Utils/AuthStorage';
+import AxiosClient from '../../Utils/HttpClient';
 
 export default ({route, navigation}: any): JSX.Element => {
   const params = route.params as {app: Application};
@@ -31,16 +30,16 @@ export default ({route, navigation}: any): JSX.Element => {
       setIsStarting(true);
 
       const handleServer = async () => {
-        AxiosClient.get(`${app.isOn ? 'stop' : 'start'}App/${app.id}`, {
-          headers: await getAuthHeader(),
-        })
-          .then(res => {
-            setIsStarting(false);
-            const {apps, updatedApp} = res.data as StartAppResponse;
-            setApp(updatedApp);
-            setApps(apps);
-          })
-          .catch(err => console.log('Error'));
+        // AxiosClient.get(`${app.isOn ? 'stop' : 'start'}App/${app.id}`, {
+        //   headers: await getAuthHeader(),
+        // })
+        //   .then(res => {
+        //     setIsStarting(false);
+        //     const {apps, updatedApp} = res.data as StartAppResponse;
+        //     setApp(updatedApp);
+        //     setApps(apps);
+        //   })
+        //   .catch(err => console.log('Error'));
       };
       handleServer();
 

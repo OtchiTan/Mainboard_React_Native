@@ -2,6 +2,8 @@ package com.mainboard.module;
 
 import android.util.Log;
 
+import androidx.annotation.RequiresPermission;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -34,7 +36,7 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public void get(String url, String authToken, Callback onResult, Callback onError) {
+    public void get(String url, ReadableMap options, Callback onResult, Callback onError) {
         RequestQueue requestQueue = Volley.newRequestQueue(getReactApplicationContext());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
@@ -51,9 +53,14 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
         ) {
             @Override
             public Map<String, String> getHeaders() {
-                HashMap headers = new HashMap();
-                headers.put("platform", "MOBILE");
-                headers.put("Authorization", "Bearer " + authToken);
+                HashMap<String, String> headers = new HashMap<>();
+
+                Iterator<Map.Entry<String, Object>> it = options.getMap("headers").getEntryIterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, Object> keyValue = it.next();
+                    headers.put(keyValue.getKey(),keyValue.getValue().toString());
+                }
+
                 return headers;
             }
         };
@@ -62,7 +69,7 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public void post(String url, String authToken,ReadableMap body,Callback onResult, Callback onError) {
+    public void post(String url, ReadableMap options, ReadableMap body, Callback onResult, Callback onError) {
         RequestQueue requestQueue = Volley.newRequestQueue(getReactApplicationContext());
 
         JSONObject jsonBody = new JSONObject();
@@ -91,9 +98,14 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
         ) {
             @Override
             public Map<String, String> getHeaders() {
-                HashMap headers = new HashMap();
-                headers.put("platform", "MOBILE");
-                headers.put("Authorization", "Bearer " + authToken);
+                HashMap<String, String> headers = new HashMap<>();
+
+                Iterator<Map.Entry<String, Object>> it = options.getMap("headers").getEntryIterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, Object> keyValue = it.next();
+                    headers.put(keyValue.getKey(),keyValue.getValue().toString());
+                }
+
                 return headers;
             }
         };

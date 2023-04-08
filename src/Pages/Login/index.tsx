@@ -7,10 +7,8 @@ import {
   BackHandler,
 } from 'react-native';
 import {useState, useRef, useContext, useEffect} from 'react';
-import {HttpErrorCause} from '../../Utils/Declarations';
 import AppContext from '../../AppContext';
-import AxiosClient from '../../Utils/AxiosClient';
-import {getAuthHeader} from '../../Utils/AuthStorage';
+import AxiosClient from '../../Utils/HttpClient';
 
 type LoginForm = {
   email: string;
@@ -31,12 +29,12 @@ export default ({navigation}: any): JSX.Element => {
   }, []);
 
   const handleSubmit = async () => {
-    AxiosClient.post('auth/login', loginForm, {headers: await getAuthHeader()})
-      .then(res => {
-        setAuthToken(res.data.authToken);
-        navigation.navigate('Dashboard');
-      })
-      .catch(err => console.log(err));
+    // AxiosClient.post('auth/login', loginForm, {headers: await getAuthHeader()})
+    //   .then(res => {
+    //     setAuthToken(res.data.authToken);
+    //     navigation.navigate('Dashboard');
+    //   })
+    //   .catch(err => console.log(err));
   };
 
   return (
