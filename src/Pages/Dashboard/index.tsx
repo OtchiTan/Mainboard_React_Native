@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {FlatList} from 'react-native';
+import {BackHandler, FlatList} from 'react-native';
 import AppContext from '../../AppContext';
 import Application from '../../Models/Application';
 import AppLayout from './Components/AppLayout';
@@ -12,6 +12,8 @@ type ResponseAPI = {
 export default ({navigation}: any): JSX.Element => {
   const {apps, setApps, onNeedLogin, authToken} = useContext(AppContext);
   useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => true);
+
     if (apps.length === 0) {
       const httpClient = new HttpClient<ResponseAPI>();
       httpClient

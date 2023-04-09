@@ -9,6 +9,8 @@ type RouterContextType = {
   onNeedLogin: (navigation: any) => void;
   authToken: string;
   setAuthToken: (newToken: string) => void;
+  navigator: any;
+  setNavigator: (newNavigator: any) => void;
 };
 
 export default createContext<RouterContextType>({
@@ -17,4 +19,8 @@ export default createContext<RouterContextType>({
   onNeedLogin(navigation) {},
   authToken: '',
   setAuthToken(newToken) {},
+  navigator: null,
+  setNavigator(newNavigator) {
+    this.navigator = newNavigator;
+  },
 });

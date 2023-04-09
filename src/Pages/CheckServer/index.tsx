@@ -10,9 +10,10 @@ type ResponseAPI = {
 };
 
 export default ({navigation}: any): JSX.Element => {
-  let {setApps, onNeedLogin} = useContext(AppContext);
+  let {setApps, onNeedLogin, setNavigator} = useContext(AppContext);
 
   useEffect(() => {
+    setNavigator(navigation);
     const httpClient = new HttpClient<ResponseAPI>();
     httpClient
       .get('')
