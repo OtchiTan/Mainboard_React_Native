@@ -36,54 +36,26 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public void get(String url, ReadableMap options, Callback onResult, Callback onError) {
-        RequestQueue requestQueue = Volley.newRequestQueue(getReactApplicationContext());
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    onResult.invoke(response.toString());
-                },
-                error -> {
-                    error.printStackTrace();
-                    if (error.networkResponse == null)
-                        onError.invoke("TIMEDOUT");
-
-                    else if (error.networkResponse.statusCode == 401)
-                        onError.invoke("UNAUTHORIZED");
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> headers = new HashMap<>();
-
-                Iterator<Map.Entry<String, Object>> it = options.getMap("headers").getEntryIterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, Object> keyValue = it.next();
-                    headers.put(keyValue.getKey(),keyValue.getValue().toString());
-                }
-
-                return headers;
-            }
-        };
-
-        requestQueue.add(request);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public void post(String url, ReadableMap options, ReadableMap body, Callback onResult, Callback onError) {
+    public void request(String url, int method, ReadableMap options, ReadableMap body, Callback onResult, Callback onError) {
         RequestQueue requestQueue = Volley.newRequestQueue(getReactApplicationContext());
 
         JSONObject jsonBody = new JSONObject();
-        Iterator<Map.Entry<String, Object>> it = body.getEntryIterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Object> keyValue = it.next();
-            try {
-                jsonBody.put(keyValue.getKey(),keyValue.getValue());
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if (body != null) {
+            Iterator<Map.Entry<String, Object>> it = body.getEntryIterator();
+            while (it.hasNext()) {
+                Map.Entry<String, Object> keyValue = it.next();
+                try {
+                    jsonBody.put(keyValue.getKey(), keyValue.getValue());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        else {
+            jsonBody = null;
+        }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+        JsonObjectRequest request = new JsonObjectRequest(method, url, jsonBody,
                 response -> {
                     onResult.invoke(response.toString());
                 },

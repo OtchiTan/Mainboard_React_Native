@@ -1,5 +1,5 @@
-import {View, Text, StyleSheet, Button} from 'react-native';
-import {useState} from 'react';
+import {View, Text, StyleSheet, Button, BackHandler} from 'react-native';
+import {useEffect, useState} from 'react';
 import Vols from './Vols';
 import Speedruns from './Speedruns';
 

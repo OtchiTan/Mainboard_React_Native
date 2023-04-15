@@ -11,8 +11,10 @@ type ResponseAPI = {
 
 export default ({navigation}: any): JSX.Element => {
   const {apps, setApps, onNeedLogin, authToken} = useContext(AppContext);
+
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => true);
+    const backHandler = () => true;
+    BackHandler.addEventListener('hardwareBackPress', backHandler);
 
     if (apps.length === 0) {
       const httpClient = new HttpClient<ResponseAPI>();
@@ -30,6 +32,10 @@ export default ({navigation}: any): JSX.Element => {
           }
         });
     }
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backHandler);
+    };
   }, []);
 
   const onItemPress = (app: Application) => {

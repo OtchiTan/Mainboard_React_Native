@@ -1,14 +1,6 @@
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Button,
-  NativeModules,
-  BackHandler,
-} from 'react-native';
+import {View, StyleSheet, TextInput, Button, BackHandler} from 'react-native';
 import {useState, useRef, useContext, useEffect} from 'react';
 import AppContext from '../../AppContext';
-import AxiosClient from '../../Utils/HttpClient';
 import HttpClient from '../../Utils/HttpClient';
 
 type LoginForm = {
@@ -30,7 +22,12 @@ export default ({navigation}: any): JSX.Element => {
   const {setAuthToken} = useContext(AppContext);
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => true);
+    const backHandler = () => true;
+    BackHandler.addEventListener('hardwareBackPress', backHandler);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backHandler);
+    };
   }, []);
 
   const handleSubmit = async () => {

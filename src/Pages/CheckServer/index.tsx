@@ -29,7 +29,12 @@ export default ({navigation}: any): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => true);
+    const backHandler = () => true;
+    BackHandler.addEventListener('hardwareBackPress', backHandler);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backHandler);
+    };
   }, []);
 
   return (

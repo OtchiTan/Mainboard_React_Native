@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet, Dimensions, Button} from 'react-native';
-import HttpClient, {HttpErrorCause} from '../../../Utils/HttpClient';
+import HttpClient from '../../../Utils/HttpClient';
 import {useContext} from 'react';
 import AppContext from '../../../AppContext';
 
@@ -7,16 +7,15 @@ type ResponseAPI = {};
 
 export default (): JSX.Element => {
   const {width, height} = Dimensions.get('screen');
-  const {onNeedLogin, navigator} = useContext(AppContext);
+  const {navigator} = useContext(AppContext);
 
   const handleStop = () => {
     const httpClient = new HttpClient<ResponseAPI>();
-    httpClient.get('shutdown').catch(error => {
-      if ((error as HttpErrorCause) === 'UNAUTHORIZED') onNeedLogin(navigator);
-      else {
-        navigator.navigate('CheckServer');
-      }
-    });
+    httpClient
+      .get('shutdown')
+      .then(res => {})
+      .catch(error => {});
+    navigator.navigate('CheckServer');
   };
 
   return (
