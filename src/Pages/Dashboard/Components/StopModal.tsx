@@ -1,13 +1,17 @@
-import {View, Text, StyleSheet, Dimensions, Button} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Button,
+  BackHandler,
+} from 'react-native';
 import HttpClient from '../../../Utils/HttpClient';
-import {useContext} from 'react';
-import AppContext from '../../../AppContext';
 
 type ResponseAPI = {};
 
 export default (): JSX.Element => {
   const {width, height} = Dimensions.get('screen');
-  const {navigator} = useContext(AppContext);
 
   const handleStop = () => {
     const httpClient = new HttpClient<ResponseAPI>();
@@ -15,7 +19,7 @@ export default (): JSX.Element => {
       .get('shutdown')
       .then(res => {})
       .catch(error => {});
-    navigator.navigate('CheckServer');
+    BackHandler.exitApp();
   };
 
   return (

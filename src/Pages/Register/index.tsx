@@ -1,11 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Button,
-  BackHandler,
-  Text,
-} from 'react-native';
+import {View, StyleSheet, TextInput, Button, BackHandler} from 'react-native';
 import {useState, useRef, useContext, useEffect} from 'react';
 import AppContext from '../../AppContext';
 import HttpClient from '../../Utils/HttpClient';
@@ -13,6 +6,7 @@ import HttpClient from '../../Utils/HttpClient';
 type LoginForm = {
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
 type ResponseAPI = {
@@ -23,13 +17,14 @@ export default ({navigation}: any): JSX.Element => {
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: '',
     password: '',
+    confirmPassword: '',
   });
 
   const passwordInput = useRef<TextInput>(null);
   const {setAuthToken} = useContext(AppContext);
 
   useEffect(() => {
-    const backHandler = () => true;
+    const backHandler = () => false;
     BackHandler.addEventListener('hardwareBackPress', backHandler);
 
     return () => {
@@ -40,18 +35,14 @@ export default ({navigation}: any): JSX.Element => {
   const handleSubmit = async () => {
     const httpClient = new HttpClient<ResponseAPI>();
     httpClient
-      .post('auth/login', loginForm)
+      .post('auth/register', loginForm)
       .then(({authToken}) => {
         setAuthToken(authToken);
         navigation.navigate('Dashboard');
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error, null, 2));
       });
-  };
-
-  const openRegister = () => {
-    navigation.navigate('Register');
   };
 
   return (
@@ -76,10 +67,18 @@ export default ({navigation}: any): JSX.Element => {
         secureTextEntry={true}
         onSubmitEditing={handleSubmit}
       />
-      <Text style={styles.text} onPress={openRegister}>
-        Register
-      </Text>
-      <Button title="Login" onPress={handleSubmit} />
+      <TextInput
+        placeholder="Confirm Password"
+        ref={passwordInput}
+        onChangeText={confirmPassword =>
+          setLoginForm(loginForm => {
+            return {...loginForm, confirmPassword};
+          })
+        }
+        secureTextEntry={true}
+        onSubmitEditing={handleSubmit}
+      />
+      <Button title="Register" onPress={handleSubmit} />
     </View>
   );
 };

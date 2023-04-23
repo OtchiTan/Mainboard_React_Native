@@ -1,7 +1,7 @@
 import {Button, Image, StyleSheet, Text, View} from 'react-native';
-import {Vol} from '../Declarations';
+import {Vol} from './Declarations';
 import {useEffect, useState} from 'react';
-import HttpClient from '../../../../../Utils/HttpClient';
+import HttpClient from '../../../../Utils/HttpClient';
 
 type ILayout = {
   vol: Vol;

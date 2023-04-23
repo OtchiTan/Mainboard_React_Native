@@ -66,6 +66,9 @@ public class HttpRequestModule extends ReactContextBaseJavaModule {
 
                     else if (error.networkResponse.statusCode == 401)
                         onError.invoke("UNAUTHORIZED");
+
+                    else
+                        onError.invoke(error);
                 }
         ) {
             @Override

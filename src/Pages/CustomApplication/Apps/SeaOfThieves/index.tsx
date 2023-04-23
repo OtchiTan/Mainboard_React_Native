@@ -1,33 +1,39 @@
-import {View, Text, StyleSheet, Button, BackHandler} from 'react-native';
-import {useEffect, useState} from 'react';
-import Vols from './Vols';
-import Speedruns from './Speedruns';
+import {View, Text, StyleSheet, NativeModules, FlatList} from 'react-native';
+import {useEffect, useContext, useState} from 'react';
+import {ResponseAPI, Vol} from './Declarations';
+import HttpClient from '../../../../Utils/HttpClient';
+import Layout from './Layout';
 
 export default () => {
-  const [page, setPage] = useState<JSX.Element>(<Vols />);
+  const [vols, setVols] = useState<Vol[]>([]);
+
+  useEffect(() => {
+    const httpClient = new HttpClient<ResponseAPI>();
+    httpClient
+      .get('sot/vols')
+      .then(res => {
+        setVols(res.vols);
+      })
+      .catch(error => {});
+  }, []);
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.head}>
-        <Button title="Vols" onPress={() => setPage(<Vols />)} />
-        <Button title="Speedruns" onPress={() => setPage(<Speedruns />)} />
-      </View>
-      {page}
+    <View style={styles.container}>
+      <FlatList
+        style={{flex: 1}}
+        data={vols}
+        renderItem={({item}) => <Layout vol={item} />}
+        keyExtractor={vol => vol.chest.name}
+        numColumns={1}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  screen: {
+  container: {
     flex: 1,
-    flexDirection: 'column',
     alignItems: 'stretch',
-    margin: 20,
-  },
-  head: {
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    flexDirection: 'row',
-    margin: 20,
+    margin: 50,
   },
 });

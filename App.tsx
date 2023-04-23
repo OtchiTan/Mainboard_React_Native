@@ -22,6 +22,7 @@ import CustomApplication from './src/Pages/CustomApplication';
 import {setToken} from './src/Utils/AuthStorage';
 import {Button, Modal, Text} from 'react-native';
 import StopModal from './src/Pages/Dashboard/Components/StopModal';
+import Register from './src/Pages/Register';
 
 const Stack = createNativeStackNavigator();
 
@@ -89,6 +90,7 @@ function App(): JSX.Element {
             component={CustomApplication}
           />
           <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Register" component={Register} />
         </Stack.Navigator>
       </AppContext.Provider>
     </NavigationContainer>
