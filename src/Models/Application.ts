@@ -1,8 +1,14 @@
-export default class Application {
-  id = 0;
-  name = '';
-  image = '';
-  isOn = false;
-  startTime: Date | null = null;
-  isContainer = true;
+export enum AppStatus {
+  OFFLINE = 'OFFLINE',
+  PENDING = 'PENDING',
+  ONLINE = 'ONLINE',
 }
+
+export type Application = {
+  id: number;
+  name: string;
+  image: string;
+  status: AppStatus;
+  startTime: Date;
+  isContainer: boolean;
+};

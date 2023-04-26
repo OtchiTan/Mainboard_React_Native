@@ -1,7 +1,7 @@
 import React, {useContext, useEffect} from 'react';
 import {BackHandler, FlatList} from 'react-native';
 import AppContext from '../../AppContext';
-import Application from '../../Models/Application';
+import {Application} from '../../Models/Application';
 import AppLayout from './Components/AppLayout';
 import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
 

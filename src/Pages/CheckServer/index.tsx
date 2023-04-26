@@ -1,6 +1,6 @@
 import {useContext, useEffect} from 'react';
 import {Text, View, BackHandler} from 'react-native';
-import Application from '../../Models/Application';
+import {Application} from '../../Models/Application';
 import AppContext from '../../AppContext';
 import {HttpErrorCause} from '../../Utils/HttpClient';
 import HttpClient from '../../Utils/HttpClient';

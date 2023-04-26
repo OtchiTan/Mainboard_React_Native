@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {View, BackHandler} from 'react-native';
-import Application from '../../Models/Application';
+import {Application} from '../../Models/Application';
 import Apps from './Apps';
 
 export default ({navigation, route}: any) => {

@@ -1,4 +1,4 @@
-import Application from '../../../Models/Application';
+import {Application} from '../../../Models/Application';
 
 export type StartAppResponse = {
   updatedApp: Application;

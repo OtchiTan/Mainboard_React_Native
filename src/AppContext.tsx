@@ -1,6 +1,6 @@
 import {createContext, useContext, useEffect} from 'react';
 import {View} from 'react-native';
-import Application from './Models/Application';
+import {Application} from './Models/Application';
 import CheckServer from './Pages/CheckServer';
 
 type RouterContextType = {

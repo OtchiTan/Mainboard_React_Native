@@ -6,7 +6,7 @@
  */
 
 import React, {useState} from 'react';
-import Application from './src/Models/Application';
+import {Application} from './src/Models/Application';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {
   NativeStackNavigationOptions,

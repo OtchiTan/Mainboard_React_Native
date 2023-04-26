@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import Application from '../../../Models/Application';
+import {AppStatus, Application} from '../../../Models/Application';
 
 type IAppLayout = {
   item: Application;
@@ -26,7 +26,12 @@ export default ({item, onPress}: IAppLayout) => {
       style={({pressed}) => [
         {
           backgroundColor: pressed ? 'black' : 'white',
-          borderColor: item.isOn ? 'green' : 'red',
+          borderColor:
+            item.status === AppStatus.OFFLINE
+              ? 'red'
+              : item.status === AppStatus.ONLINE
+              ? 'green'
+              : 'yellow',
           borderWidth: item.isContainer ? 1 : 0,
           width: width * 0.45,
           ...styles.item,

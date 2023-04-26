@@ -1,10 +1,10 @@
 import {BackHandler, Button, Image, Text, View} from 'react-native';
 import {useState, useContext} from 'react';
-import Application from '../../Models/Application';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
 import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
+import {AppStatus, Application} from '../../Models/Application';
 
 export default ({route, navigation}: any): JSX.Element => {
   const params = route.params as {app: Application};
@@ -24,8 +24,21 @@ export default ({route, navigation}: any): JSX.Element => {
 
       const handleServer = async () => {
         const httpClient = new HttpClient<StartAppResponse>();
+        let action = '';
+
+        switch (app.status) {
+          case AppStatus.OFFLINE:
+            action = 'start';
+            break;
+          case AppStatus.ONLINE:
+            action = 'stop';
+            break;
+          default:
+            return;
+        }
+
         httpClient
-          .get(`${app.isOn ? 'stop' : 'start'}App/${app.id}`)
+          .get(`${action}App/${app.id}`)
           .then(({apps, updatedApp}) => {
             setApps(apps);
             setApp(updatedApp);
@@ -39,19 +52,19 @@ export default ({route, navigation}: any): JSX.Element => {
       };
       handleServer();
 
-      setApp(app => {
-        return {
-          ...app,
-          isOn: !app.isOn,
-          startTime: app.isOn ? null : new Date(),
-        };
-      });
+      // setApp(app => {
+      //   return {
+      //     ...app,
+      //     isOn: !app.isOn,
+      //     startTime: app.isOn ? null : new Date(),
+      //   };
+      // });
     }
   };
 
   const {width} = Dimensions.get('window');
 
-  if (app.isOn) {
+  if (app.status === AppStatus.ONLINE) {
     setTimeout(() => setActualDate(new Date()), 60000);
   }
 
@@ -80,14 +93,29 @@ export default ({route, navigation}: any): JSX.Element => {
         />
         <View style={{...styles.headText, width: width * 0.6}}>
           <Text style={styles.title}>{app.name}</Text>
-          {app.isOn && app.startTime && <Text>{lifeTimeText}</Text>}
+          {app.status === AppStatus.ONLINE && app.startTime && (
+            <Text>{lifeTimeText}</Text>
+          )}
         </View>
       </View>
       <View style={styles.startButton}>
         <Button
-          title={app.isOn ? 'Stop' : 'Start'}
+          title={
+            app.status === AppStatus.ONLINE
+              ? 'Stop'
+              : app.status === AppStatus.OFFLINE
+              ? 'Start'
+              : 'Starting'
+          }
+          color={
+            app.status === AppStatus.ONLINE
+              ? 'red'
+              : app.status === AppStatus.OFFLINE
+              ? 'green'
+              : 'yellow'
+          }
           onPress={startApp}
-          disabled={isStarting}
+          disabled={isStarting || app.status === AppStatus.PENDING}
         />
       </View>
     </View>
