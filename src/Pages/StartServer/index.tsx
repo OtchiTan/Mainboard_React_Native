@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react';
 import {Button, NativeModules, Text, View, BackHandler} from 'react-native';
 import {Application} from '../../Models/Application';
 import AppContext from '../../AppContext';
-import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
+import {AxiosClient} from '../../Utils/AxiosClient';
 
 type ResponseAPI = {
   applications: Application[];
@@ -26,16 +26,14 @@ export default ({navigation}: any): JSX.Element => {
 
   useEffect(() => {
     if (isWakeCalled) {
-      const httpClient = new HttpClient<ResponseAPI>();
-      httpClient
-        .get('')
-        .then(({applications}) => {
-          setApps(applications);
+      new AxiosClient()
+        .get<ResponseAPI>('')
+        .then(({data}) => {
+          setApps(data.applications);
           navigation.navigate('Dashboard');
         })
         .catch(error => {
-          if ((error as HttpErrorCause) === 'UNAUTHORIZED')
-            onNeedLogin(navigation);
+          if (error.response.status === 401) onNeedLogin(navigation);
           else {
             startServer();
             setTimeout(() => setTryWake(tryWake + 1), 1000);

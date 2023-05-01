@@ -1,7 +1,7 @@
 import {View, StyleSheet, TextInput, Button, BackHandler} from 'react-native';
 import {useState, useRef, useContext, useEffect} from 'react';
 import AppContext from '../../AppContext';
-import HttpClient from '../../Utils/HttpClient';
+import {AxiosClient} from '../../Utils/AxiosClient';
 
 type LoginForm = {
   email: string;
@@ -33,11 +33,10 @@ export default ({navigation}: any): JSX.Element => {
   }, []);
 
   const handleSubmit = async () => {
-    const httpClient = new HttpClient<ResponseAPI>();
-    httpClient
-      .post('auth/register', loginForm)
-      .then(({authToken}) => {
-        setAuthToken(authToken);
+    new AxiosClient()
+      .post<ResponseAPI>('auth/register', loginForm)
+      .then(({data}) => {
+        setAuthToken(data.authToken);
         navigation.navigate('Dashboard');
       })
       .catch(error => {

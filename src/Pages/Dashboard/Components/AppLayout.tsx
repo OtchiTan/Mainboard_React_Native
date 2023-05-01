@@ -31,7 +31,7 @@ export default ({item, onPress}: IAppLayout) => {
               ? 'red'
               : item.status === AppStatus.ONLINE
               ? 'green'
-              : 'yellow',
+              : '#E1AD01',
           borderWidth: item.isContainer ? 1 : 0,
           width: width * 0.45,
           ...styles.item,

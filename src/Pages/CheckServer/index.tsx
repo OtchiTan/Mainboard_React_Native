@@ -2,8 +2,7 @@ import {useContext, useEffect} from 'react';
 import {Text, View, BackHandler} from 'react-native';
 import {Application} from '../../Models/Application';
 import AppContext from '../../AppContext';
-import {HttpErrorCause} from '../../Utils/HttpClient';
-import HttpClient from '../../Utils/HttpClient';
+import {AxiosClient} from '../../Utils/AxiosClient';
 
 type ResponseAPI = {
   applications: Application[];
@@ -14,16 +13,15 @@ export default ({navigation}: any): JSX.Element => {
 
   useEffect(() => {
     setNavigator(navigation);
-    const httpClient = new HttpClient<ResponseAPI>();
-    httpClient
-      .get('')
-      .then(({applications}) => {
-        setApps(applications);
+
+    new AxiosClient()
+      .get<ResponseAPI>('')
+      .then(({data}) => {
+        setApps(data.applications);
         navigation.navigate('Dashboard');
       })
       .catch(error => {
-        if ((error as HttpErrorCause) === 'UNAUTHORIZED')
-          onNeedLogin(navigation);
+        if (error.response.status === 401) onNeedLogin(navigation);
         else navigation.navigate('StartServer');
       });
   }, []);

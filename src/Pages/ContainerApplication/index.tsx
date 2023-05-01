@@ -3,8 +3,8 @@ import {useState, useContext} from 'react';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
-import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
 import {AppStatus, Application} from '../../Models/Application';
+import {AxiosClient} from '../../Utils/AxiosClient';
 
 export default ({route, navigation}: any): JSX.Element => {
   const params = route.params as {app: Application};
@@ -23,7 +23,7 @@ export default ({route, navigation}: any): JSX.Element => {
       setIsStarting(true);
 
       const handleServer = async () => {
-        const httpClient = new HttpClient<StartAppResponse>();
+        const axiosClient = new AxiosClient();
         let action = '';
 
         switch (app.status) {
@@ -37,16 +37,15 @@ export default ({route, navigation}: any): JSX.Element => {
             return;
         }
 
-        httpClient
-          .get(`${action}App/${app.id}`)
-          .then(({apps, updatedApp}) => {
-            setApps(apps);
-            setApp(updatedApp);
+        axiosClient
+          .get<StartAppResponse>(`${action}App/${app.id}`)
+          .then(({data}) => {
+            setApps(data.apps);
+            setApp(data.updatedApp);
             setIsStarting(false);
           })
           .catch(error => {
-            if ((error as HttpErrorCause) === 'UNAUTHORIZED')
-              onNeedLogin(navigation);
+            if (error.response.status === 401) onNeedLogin(navigation);
             else navigation.navigate('StartServer');
           });
       };
@@ -112,7 +111,7 @@ export default ({route, navigation}: any): JSX.Element => {
               ? 'red'
               : app.status === AppStatus.OFFLINE
               ? 'green'
-              : 'yellow'
+              : '#E1AD01'
           }
           onPress={startApp}
           disabled={isStarting || app.status === AppStatus.PENDING}

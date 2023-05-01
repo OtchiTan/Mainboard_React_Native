@@ -6,16 +6,13 @@ import {
   Button,
   BackHandler,
 } from 'react-native';
-import HttpClient from '../../../Utils/HttpClient';
-
-type ResponseAPI = {};
+import {AxiosClient} from '../../../Utils/AxiosClient';
 
 export default (): JSX.Element => {
   const {width, height} = Dimensions.get('screen');
 
   const handleStop = () => {
-    const httpClient = new HttpClient<ResponseAPI>();
-    httpClient
+    new AxiosClient()
       .get('shutdown')
       .then(res => {})
       .catch(error => {});

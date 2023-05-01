@@ -3,7 +3,7 @@ import {BackHandler, FlatList} from 'react-native';
 import AppContext from '../../AppContext';
 import {Application} from '../../Models/Application';
 import AppLayout from './Components/AppLayout';
-import HttpClient, {HttpErrorCause} from '../../Utils/HttpClient';
+import {AxiosClient} from '../../Utils/AxiosClient';
 
 type ResponseAPI = {
   applications: Application[];
@@ -17,19 +17,15 @@ export default ({navigation}: any): JSX.Element => {
     BackHandler.addEventListener('hardwareBackPress', backHandler);
 
     if (apps.length === 0) {
-      const httpClient = new HttpClient<ResponseAPI>();
-      httpClient
-        .get('')
-        .then(({applications}) => {
-          setApps(applications);
+      new AxiosClient()
+        .get<ResponseAPI>('')
+        .then(({data}) => {
+          setApps(data.applications);
           navigation.navigate('Dashboard');
         })
         .catch(error => {
-          if ((error as HttpErrorCause) === 'UNAUTHORIZED')
-            onNeedLogin(navigation);
-          else {
-            console.log('ERROR');
-          }
+          if (error.response.status === 401) onNeedLogin(navigation);
+          else console.log('ERROR');
         });
     }
 

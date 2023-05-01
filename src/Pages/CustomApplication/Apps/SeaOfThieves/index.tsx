@@ -1,18 +1,17 @@
 import {View, Text, StyleSheet, NativeModules, FlatList} from 'react-native';
 import {useEffect, useContext, useState} from 'react';
 import {ResponseAPI, Vol} from './Declarations';
-import HttpClient from '../../../../Utils/HttpClient';
 import Layout from './Layout';
+import {AxiosClient} from '../../../../Utils/AxiosClient';
 
 export default () => {
   const [vols, setVols] = useState<Vol[]>([]);
 
   useEffect(() => {
-    const httpClient = new HttpClient<ResponseAPI>();
-    httpClient
-      .get('sot/vols')
-      .then(res => {
-        setVols(res.vols);
+    new AxiosClient()
+      .get<ResponseAPI>('sot/vols')
+      .then(({data}) => {
+        setVols(data.vols);
       })
       .catch(error => {});
   }, []);

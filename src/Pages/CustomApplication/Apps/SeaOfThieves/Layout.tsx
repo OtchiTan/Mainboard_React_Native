@@ -1,7 +1,7 @@
 import {Button, Image, StyleSheet, Text, View} from 'react-native';
 import {Vol} from './Declarations';
 import {useEffect, useState} from 'react';
-import HttpClient from '../../../../Utils/HttpClient';
+import {AxiosClient} from '../../../../Utils/AxiosClient';
 
 type ILayout = {
   vol: Vol;
@@ -11,19 +11,19 @@ export default ({vol}: ILayout) => {
   const [actualVol, setActualVol] = useState<Vol>(vol);
 
   const addVol = () => {
-    new HttpClient<Vol>()
-      .post('sot/vols', {chestId: vol.chest.id})
-      .then(res => {
-        setActualVol(res);
+    new AxiosClient()
+      .post<Vol>('sot/vols', {chestId: vol.chest.id})
+      .then(({data}) => {
+        setActualVol(data);
       })
       .catch(err => {});
   };
 
   const deleteVol = () => {
-    new HttpClient<Vol>()
-      .delete('sot/vols/' + vol.chest.id)
-      .then(res => {
-        setActualVol(res);
+    new AxiosClient()
+      .delete<Vol>('sot/vols/' + vol.chest.id)
+      .then(({data}) => {
+        setActualVol(data);
       })
       .catch(err => {});
   };
