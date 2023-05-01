@@ -33,7 +33,8 @@ export default ({navigation}: any): JSX.Element => {
           navigation.navigate('Dashboard');
         })
         .catch(error => {
-          if (error.response.status === 401) onNeedLogin(navigation);
+          if (error.response && error.response.status === 401)
+            onNeedLogin(navigation);
           else {
             startServer();
             setTimeout(() => setTryWake(tryWake + 1), 1000);
