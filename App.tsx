@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Application} from './src/Models/Application';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {
@@ -23,6 +23,7 @@ import {setToken} from './src/Utils/AuthStorage';
 import {Button, Modal, Text} from 'react-native';
 import StopModal from './src/Pages/Dashboard/Components/StopModal';
 import Register from './src/Pages/Register';
+import {io} from 'socket.io-client';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,18 @@ function App(): JSX.Element {
     ),
     title: 'Mainboard',
   };
+
+  useEffect(() => {
+    const socket = io('https://api.otchi.ovh/applications', {secure: true});
+
+    socket.on('applications', data => {
+      setApps(data.applications);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <NavigationContainer>

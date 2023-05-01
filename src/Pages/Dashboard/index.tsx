@@ -35,7 +35,7 @@ export default ({navigation}: any): JSX.Element => {
   }, []);
 
   const onItemPress = (app: Application) => {
-    if (app.isContainer) navigation.navigate('ContainerApplication', {app});
+    if (app.containerArgs) navigation.navigate('ContainerApplication', {app});
     else navigation.navigate('CustomApplication', {app});
   };
 

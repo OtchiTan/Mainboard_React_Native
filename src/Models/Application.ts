@@ -9,6 +9,10 @@ export type Application = {
   name: string;
   image: string;
   status: AppStatus;
+  startLog: string;
   startTime: Date;
-  isContainer: boolean;
+  containerId?: string;
+  containerArgs?: JSON;
+  stopCommand?: string;
+  stopLog: string;
 };
