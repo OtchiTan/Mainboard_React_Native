@@ -24,6 +24,7 @@ import {Button, Modal, Text} from 'react-native';
 import StopModal from './src/Pages/Dashboard/Components/StopModal';
 import Register from './src/Pages/Register';
 import {RoutesList} from './src/Utils/Declarations';
+import {Provider as PaperProvider} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator<RoutesList>();
 
@@ -48,53 +49,57 @@ function App(): JSX.Element {
   };
 
   return (
-    <NavigationContainer>
-      <AppContext.Provider
-        value={{
-          apps,
-          setApps,
-          onNeedLogin(navigation: any) {
-            navigation.navigate('Login');
-          },
-          authToken,
-          setAuthToken: setNewAuthToken,
-          navigator: null,
-          setNavigator(newNavigator) {
-            this.navigator = newNavigator;
-          },
-        }}>
-        <Modal
-          visible={stopModalVisibility}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={() => setStopModalVisibility(false)}
-          children={<StopModal onClose={() => setStopModalVisibility(false)} />}
-        />
-        <Stack.Navigator
-          initialRouteName="CheckServer"
-          screenOptions={{
-            headerShown: false,
+    <PaperProvider>
+      <NavigationContainer>
+        <AppContext.Provider
+          value={{
+            apps,
+            setApps,
+            onNeedLogin(navigation: any) {
+              navigation.navigate('Login');
+            },
+            authToken,
+            setAuthToken: setNewAuthToken,
+            navigator: null,
+            setNavigator(newNavigator) {
+              this.navigator = newNavigator;
+            },
           }}>
-          <Stack.Screen
-            name="Dashboard"
-            component={Dashboard}
-            options={dashboardHeaderOptions}
+          <Modal
+            visible={stopModalVisibility}
+            animationType="fade"
+            transparent={true}
+            onRequestClose={() => setStopModalVisibility(false)}
+            children={
+              <StopModal onClose={() => setStopModalVisibility(false)} />
+            }
           />
-          <Stack.Screen name="CheckServer" component={CheckServer} />
-          <Stack.Screen name="StartServer" component={StartServer} />
-          <Stack.Screen
-            name="ContainerApplication"
-            component={ContainerApplication}
-          />
-          <Stack.Screen
-            name={'CustomApplication'}
-            component={CustomApplication}
-          />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Register" component={Register} />
-        </Stack.Navigator>
-      </AppContext.Provider>
-    </NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="CheckServer"
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack.Screen
+              name="Dashboard"
+              component={Dashboard}
+              options={dashboardHeaderOptions}
+            />
+            <Stack.Screen name="CheckServer" component={CheckServer} />
+            <Stack.Screen name="StartServer" component={StartServer} />
+            <Stack.Screen
+              name="ContainerApplication"
+              component={ContainerApplication}
+            />
+            <Stack.Screen
+              name={'CustomApplication'}
+              component={CustomApplication}
+            />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+          </Stack.Navigator>
+        </AppContext.Provider>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 

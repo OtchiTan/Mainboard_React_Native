@@ -1,11 +1,12 @@
-import {View, StyleSheet, TextInput, Button, BackHandler} from 'react-native';
-import {useState, useRef, useContext, useEffect} from 'react';
+import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
+import {useState, useContext, useEffect} from 'react';
 import AppContext from '../../AppContext';
 import {AxiosClient} from '../../Utils/AxiosClient';
 import {NavigationProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
+import {TextInput, Button, Text} from 'react-native-paper';
 
-type LoginForm = {
+type RegisterForm = {
   email: string;
   username: string;
   password: string;
@@ -21,22 +22,25 @@ export default ({
 }: {
   navigation: NavigationProp<RoutesList>;
 }): JSX.Element => {
-  const [loginForm, setLoginForm] = useState<LoginForm>({
+  const [registerForm, setRegisterForm] = useState<RegisterForm>({
     email: '',
     username: '',
     password: '',
     confirmPassword: '',
   });
 
-  const passwordInput = useRef<TextInput>(null);
   const {setAuthToken} = useContext(AppContext);
+  var {width} = Dimensions.get('window');
 
   useEffect(() => {
-    const backHandler = () => false;
+    const backHandler = () => {
+      navigation.navigate('Login');
+      return false;
+    };
     BackHandler.addEventListener('hardwareBackPress', backHandler);
 
     const focusListener = navigation.addListener('focus', () => {
-      setLoginForm({
+      setRegisterForm({
         email: '',
         username: '',
         password: '',
@@ -52,7 +56,7 @@ export default ({
 
   const handleSubmit = async () => {
     new AxiosClient()
-      .post<ResponseAPI>('auth/register', loginForm)
+      .post<ResponseAPI>('auth/register', registerForm)
       .then(({data}) => {
         setAuthToken(data.authToken);
         navigation.navigate('Dashboard');
@@ -62,58 +66,92 @@ export default ({
       });
   };
 
+  const openLogin = () => {
+    navigation.navigate('Login');
+  };
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="E-Mail"
-        onChangeText={email =>
-          setLoginForm(loginForm => {
-            return {...loginForm, email};
-          })
-        }
-        onSubmitEditing={passwordInput.current?.focus}
-        value={loginForm.email}
-      />
-      <TextInput
-        placeholder="Username"
-        onChangeText={username =>
-          setLoginForm(loginForm => {
-            return {...loginForm, username};
-          })
-        }
-        onSubmitEditing={passwordInput.current?.focus}
-        value={loginForm.username}
-      />
-      <TextInput
-        placeholder="Password"
-        ref={passwordInput}
-        onChangeText={password =>
-          setLoginForm(loginForm => {
-            return {...loginForm, password};
-          })
-        }
-        secureTextEntry={true}
-        onSubmitEditing={handleSubmit}
-        value={loginForm.password}
-      />
-      <TextInput
-        placeholder="Confirm Password"
-        ref={passwordInput}
-        onChangeText={confirmPassword =>
-          setLoginForm(loginForm => {
-            return {...loginForm, confirmPassword};
-          })
-        }
-        secureTextEntry={true}
-        onSubmitEditing={handleSubmit}
-        value={loginForm.confirmPassword}
-      />
-      <Button title="Register" onPress={handleSubmit} />
+    <View style={styles.page}>
+      <Text style={styles.text} onPress={openLogin}>
+        Login
+      </Text>
+      <View style={styles.container}>
+        <TextInput
+          placeholder="E-Mail"
+          onChangeText={email =>
+            setRegisterForm(loginForm => {
+              return {...loginForm, email};
+            })
+          }
+          style={{...styles.input, width: width / 1.5}}
+          value={registerForm.email}
+        />
+        <TextInput
+          placeholder="Username"
+          onChangeText={username =>
+            setRegisterForm(loginForm => {
+              return {...loginForm, username};
+            })
+          }
+          style={{...styles.input, width: width / 1.5}}
+          value={registerForm.username}
+        />
+        <TextInput
+          placeholder="Password"
+          onChangeText={password =>
+            setRegisterForm(loginForm => {
+              return {...loginForm, password};
+            })
+          }
+          style={{...styles.input, width: width / 1.5}}
+          secureTextEntry={true}
+          onSubmitEditing={handleSubmit}
+          value={registerForm.password}
+        />
+        <TextInput
+          placeholder="Confirm Password"
+          onChangeText={confirmPassword =>
+            setRegisterForm(loginForm => {
+              return {...loginForm, confirmPassword};
+            })
+          }
+          style={{...styles.input, width: width / 1.5}}
+          secureTextEntry={true}
+          onSubmitEditing={handleSubmit}
+          value={registerForm.confirmPassword}
+        />
+        <Button
+          mode="contained"
+          style={{...styles.button, width: width / 2}}
+          onPress={handleSubmit}>
+          Register
+        </Button>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, justifyContent: 'center', alignItems: 'center'},
-  text: {padding: 5, color: 'blue', textDecorationLine: 'underline'},
+  page: {flex: 1},
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginVertical: 20,
+    marginHorizontal: 50,
+  },
+  text: {
+    padding: 15,
+    color: 'white',
+    textDecorationLine: 'none',
+    fontSize: 20,
+    alignSelf: 'flex-end',
+  },
+  button: {
+    marginTop: 20,
+  },
+  input: {
+    marginVertical: 20,
+  },
 });
