@@ -2,6 +2,8 @@ import {View, StyleSheet, TextInput, Button, BackHandler} from 'react-native';
 import {useState, useRef, useContext, useEffect} from 'react';
 import AppContext from '../../AppContext';
 import {AxiosClient} from '../../Utils/AxiosClient';
+import {NavigationProp} from '@react-navigation/native';
+import {RoutesList} from '../../Utils/Declarations';
 
 type LoginForm = {
   email: string;
@@ -13,7 +15,11 @@ type ResponseAPI = {
   authToken: string;
 };
 
-export default ({navigation}: any): JSX.Element => {
+export default ({
+  navigation,
+}: {
+  navigation: NavigationProp<RoutesList>;
+}): JSX.Element => {
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: '',
     password: '',

@@ -1,23 +1,29 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {BackHandler, FlatList} from 'react-native';
 import AppContext from '../../AppContext';
 import {Application} from '../../Models/Application';
 import AppLayout from './Components/AppLayout';
 import {AxiosClient} from '../../Utils/AxiosClient';
-import {Socket, io} from 'socket.io-client';
+import {io} from 'socket.io-client';
+import {NavigationProp} from '@react-navigation/native';
+import {RoutesList} from '../../Utils/Declarations';
+import {SocketClient} from '../../Utils/SocketClient';
 
 type ResponseAPI = {
   applications: Application[];
 };
 
-export default ({navigation}: any): JSX.Element => {
+export default ({
+  navigation,
+}: {
+  navigation: NavigationProp<RoutesList>;
+}): JSX.Element => {
   const {apps, setApps, onNeedLogin} = useContext(AppContext);
+  const [socket] = useState<SocketClient>(() => new SocketClient(navigation));
 
   useEffect(() => {
     const backHandler = () => true;
     BackHandler.addEventListener('hardwareBackPress', backHandler);
-
-    const socket = io('https://api.otchi.ovh/applications', {secure: true});
 
     if (apps.length === 0) {
       new AxiosClient()
@@ -29,13 +35,14 @@ export default ({navigation}: any): JSX.Element => {
         });
     }
 
-    socket.on('applications_update', data => {
-      setApps(data.applications);
+    socket.init(sk => {
+      sk.on('applications_update', data => {
+        setApps(data.applications);
+      });
     });
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backHandler);
-      socket.off('applications_update');
       socket.disconnect();
     };
   }, []);

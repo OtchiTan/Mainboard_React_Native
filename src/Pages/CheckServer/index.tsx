@@ -3,12 +3,18 @@ import {Text, View, BackHandler} from 'react-native';
 import {Application} from '../../Models/Application';
 import AppContext from '../../AppContext';
 import {AxiosClient} from '../../Utils/AxiosClient';
+import {NavigationProp} from '@react-navigation/native';
+import {RoutesList} from '../../Utils/Declarations';
 
 type ResponseAPI = {
   applications: Application[];
 };
 
-export default ({navigation}: any): JSX.Element => {
+export default ({
+  navigation,
+}: {
+  navigation: NavigationProp<RoutesList>;
+}): JSX.Element => {
   let {setApps, onNeedLogin, setNavigator} = useContext(AppContext);
 
   useEffect(() => {

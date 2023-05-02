@@ -6,10 +6,21 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {AppStatus, Application} from '../../Models/Application';
 import {AxiosClient} from '../../Utils/AxiosClient';
 import {io} from 'socket.io-client';
+import {NavigationProp, RouteProp} from '@react-navigation/native';
+import {RoutesList} from '../../Utils/Declarations';
+import {SocketClient} from '../../Utils/SocketClient';
 
-export default ({route, navigation}: any): JSX.Element => {
-  const params = route.params as {app: Application};
-  const [app, setApp] = useState<Application>(params.app);
+type RouteParam = {app: {app: Application}};
+
+export default ({
+  navigation,
+  route,
+}: {
+  navigation: NavigationProp<RoutesList>;
+  route: RouteProp<RouteParam>;
+}): JSX.Element => {
+  const [app, setApp] = useState<Application>(route.params.app);
+  const [socket] = useState<SocketClient>(() => new SocketClient(navigation));
   const [isStarting, setIsStarting] = useState<boolean>(false);
   const {setApps, onNeedLogin} = useContext(AppContext);
   const [actualDate, setActualDate] = useState<Date>(new Date());
@@ -20,18 +31,17 @@ export default ({route, navigation}: any): JSX.Element => {
   });
 
   useEffect(() => {
-    const socket = io('https://api.otchi.ovh/applications', {secure: true});
-
-    socket.on('applications_update', data => {
-      setApps(data.applications);
-      const actualApp = data.applications.find(
-        (appToTest: Application) => appToTest.id === app.id,
-      );
-      if (actualApp) setApp(actualApp);
+    socket.init(sk => {
+      sk.on('applications_update', data => {
+        setApps(data.applications);
+        const actualApp = data.applications.find(
+          (appToTest: Application) => appToTest.id === app.id,
+        );
+        if (actualApp) setApp(actualApp);
+      });
     });
 
     return () => {
-      socket.off('applications_update');
       socket.disconnect();
     };
   }, []);
