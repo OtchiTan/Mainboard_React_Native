@@ -10,7 +10,7 @@ import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
 import {SocketClient} from '../../Utils/SocketClient';
 
-type RouteParam = {app: {app: Application}};
+type RouteParam = {ContainerApplication: {app: Application}};
 
 export default ({
   navigation,

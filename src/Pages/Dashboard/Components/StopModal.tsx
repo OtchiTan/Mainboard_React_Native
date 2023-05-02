@@ -7,9 +7,17 @@ import {
   BackHandler,
 } from 'react-native';
 import {AxiosClient} from '../../../Utils/AxiosClient';
+import {clearToken} from '../../../Utils/AuthStorage';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RoutesList} from '../../../Utils/Declarations';
 
-export default (): JSX.Element => {
+type ModalType = {
+  onClose: () => void;
+};
+
+export default ({onClose}: ModalType): JSX.Element => {
   const {width, height} = Dimensions.get('screen');
+  const navigation = useNavigation<NavigationProp<RoutesList>>();
 
   const handleStop = () => {
     new AxiosClient()
@@ -19,10 +27,19 @@ export default (): JSX.Element => {
     BackHandler.exitApp();
   };
 
+  const handleLogout = () => {
+    clearToken();
+    navigation.navigate('Login');
+    onClose();
+  };
+
   return (
     <View style={styles.container}>
       <View style={{...styles.modal, width: width / 1.5, height: height / 3}}>
         <Text style={styles.text}>Are you sure about that ?</Text>
+        <View style={styles.buttonContainer}>
+          <Button title="Logout" color={'red'} onPress={handleLogout} />
+        </View>
 
         <View style={styles.buttonContainer}>
           <Button title="Stop" color={'red'} onPress={handleStop} />

@@ -38,8 +38,16 @@ export default ({
     const backHandler = () => true;
     BackHandler.addEventListener('hardwareBackPress', backHandler);
 
+    const focusListener = navigation.addListener('focus', () => {
+      setLoginForm({
+        email: '',
+        password: '',
+      });
+    });
+
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backHandler);
+      navigation.removeListener('focus', focusListener);
     };
   }, []);
 
@@ -51,7 +59,7 @@ export default ({
         navigation.navigate('Dashboard');
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error, null, 2));
       });
   };
 
@@ -69,6 +77,7 @@ export default ({
           })
         }
         onSubmitEditing={passwordInput.current?.focus}
+        value={loginForm.email}
       />
       <TextInput
         placeholder="Password"
@@ -80,6 +89,7 @@ export default ({
         }
         secureTextEntry={true}
         onSubmitEditing={handleSubmit}
+        value={loginForm.password}
       />
       <Text style={styles.text} onPress={openRegister}>
         Register

@@ -5,9 +5,9 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Application} from './src/Models/Application';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
@@ -23,9 +23,9 @@ import {setToken} from './src/Utils/AuthStorage';
 import {Button, Modal, Text} from 'react-native';
 import StopModal from './src/Pages/Dashboard/Components/StopModal';
 import Register from './src/Pages/Register';
-import {io} from 'socket.io-client';
+import {RoutesList} from './src/Utils/Declarations';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RoutesList>();
 
 function App(): JSX.Element {
   const [apps, setApps] = useState<Application[]>([]);
@@ -68,7 +68,7 @@ function App(): JSX.Element {
           animationType="fade"
           transparent={true}
           onRequestClose={() => setStopModalVisibility(false)}
-          children={<StopModal />}
+          children={<StopModal onClose={() => setStopModalVisibility(false)} />}
         />
         <Stack.Navigator
           initialRouteName="CheckServer"
@@ -87,7 +87,7 @@ function App(): JSX.Element {
             component={ContainerApplication}
           />
           <Stack.Screen
-            name="CustomApplication"
+            name={'CustomApplication'}
             component={CustomApplication}
           />
           <Stack.Screen name="Login" component={Login} />

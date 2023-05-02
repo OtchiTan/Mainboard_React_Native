@@ -5,7 +5,7 @@ import Apps from './Apps';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
 
-type RouteParam = {app: {app: Application}};
+type RouteParam = {CustomApplication: {app: Application}};
 
 export default ({
   navigation,

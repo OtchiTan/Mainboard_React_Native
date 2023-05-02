@@ -7,6 +7,7 @@ import {RoutesList} from '../../Utils/Declarations';
 
 type LoginForm = {
   email: string;
+  username: string;
   password: string;
   confirmPassword: string;
 };
@@ -22,6 +23,7 @@ export default ({
 }): JSX.Element => {
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: '',
+    username: '',
     password: '',
     confirmPassword: '',
   });
@@ -33,8 +35,18 @@ export default ({
     const backHandler = () => false;
     BackHandler.addEventListener('hardwareBackPress', backHandler);
 
+    const focusListener = navigation.addListener('focus', () => {
+      setLoginForm({
+        email: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+      });
+    });
+
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backHandler);
+      navigation.removeListener('focus', focusListener);
     };
   }, []);
 
@@ -46,7 +58,7 @@ export default ({
         navigation.navigate('Dashboard');
       })
       .catch(error => {
-        console.log(JSON.stringify(error, null, 2));
+        console.log(error);
       });
   };
 
@@ -60,6 +72,17 @@ export default ({
           })
         }
         onSubmitEditing={passwordInput.current?.focus}
+        value={loginForm.email}
+      />
+      <TextInput
+        placeholder="Username"
+        onChangeText={username =>
+          setLoginForm(loginForm => {
+            return {...loginForm, username};
+          })
+        }
+        onSubmitEditing={passwordInput.current?.focus}
+        value={loginForm.username}
       />
       <TextInput
         placeholder="Password"
@@ -71,6 +94,7 @@ export default ({
         }
         secureTextEntry={true}
         onSubmitEditing={handleSubmit}
+        value={loginForm.password}
       />
       <TextInput
         placeholder="Confirm Password"
@@ -82,6 +106,7 @@ export default ({
         }
         secureTextEntry={true}
         onSubmitEditing={handleSubmit}
+        value={loginForm.confirmPassword}
       />
       <Button title="Register" onPress={handleSubmit} />
     </View>

@@ -15,3 +15,11 @@ export async function setToken(newToken: string): Promise<void | Error> {
     return error as Error;
   }
 }
+
+export async function clearToken(): Promise<void | Error> {
+  try {
+    await AsyncStorage.removeItem('auth_token');
+  } catch (error) {
+    return error as Error;
+  }
+}
