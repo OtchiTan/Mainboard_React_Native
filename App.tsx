@@ -47,18 +47,6 @@ function App(): JSX.Element {
     title: 'Mainboard',
   };
 
-  useEffect(() => {
-    const socket = io('https://api.otchi.ovh/applications', {secure: true});
-
-    socket.on('applications', data => {
-      setApps(data.applications);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
   return (
     <NavigationContainer>
       <AppContext.Provider

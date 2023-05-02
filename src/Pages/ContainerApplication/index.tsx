@@ -1,10 +1,11 @@
 import {BackHandler, Button, Image, Text, View} from 'react-native';
-import {useState, useContext} from 'react';
+import {useState, useContext, useEffect} from 'react';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
 import {AppStatus, Application} from '../../Models/Application';
 import {AxiosClient} from '../../Utils/AxiosClient';
+import {io} from 'socket.io-client';
 
 export default ({route, navigation}: any): JSX.Element => {
   const params = route.params as {app: Application};
@@ -17,6 +18,23 @@ export default ({route, navigation}: any): JSX.Element => {
     navigation.navigate('Dashboard');
     return true;
   });
+
+  useEffect(() => {
+    const socket = io('https://api.otchi.ovh/applications', {secure: true});
+
+    socket.on('applications_update', data => {
+      setApps(data.applications);
+      const actualApp = data.applications.find(
+        (appToTest: Application) => appToTest.id === app.id,
+      );
+      if (actualApp) setApp(actualApp);
+    });
+
+    return () => {
+      socket.off('applications_update');
+      socket.disconnect();
+    };
+  }, []);
 
   const startApp = () => {
     if (!isStarting) {
@@ -50,14 +68,6 @@ export default ({route, navigation}: any): JSX.Element => {
           });
       };
       handleServer();
-
-      // setApp(app => {
-      //   return {
-      //     ...app,
-      //     isOn: !app.isOn,
-      //     startTime: app.isOn ? null : new Date(),
-      //   };
-      // });
     }
   };
 
