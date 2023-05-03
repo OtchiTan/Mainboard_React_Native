@@ -1,10 +1,11 @@
 import {useContext, useEffect, useState} from 'react';
-import {Button, NativeModules, Text, View, BackHandler} from 'react-native';
+import {NativeModules, View, BackHandler} from 'react-native';
 import {Application} from '../../Models/Application';
 import AppContext from '../../AppContext';
 import {AxiosClient} from '../../Utils/AxiosClient';
 import {NavigationProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
+import {Button, Text} from 'react-native-paper';
 
 type ResponseAPI = {
   applications: Application[];
@@ -20,14 +21,16 @@ export default ({
   let {setApps, onNeedLogin} = useContext(AppContext);
 
   const startServer = () => {
-    setIsWakeCalled(true);
-    const {WakeOnLanModule} = NativeModules;
-    WakeOnLanModule.wake(
-      'D8:97:BA:81:6A:9B',
-      '88.138.52.95',
-      9,
-      (error: string) => console.log(error),
-    );
+    if (!isWakeCalled) {
+      setIsWakeCalled(true);
+      const {WakeOnLanModule} = NativeModules;
+      WakeOnLanModule.wake(
+        'D8:97:BA:81:6A:9B',
+        '88.138.52.95',
+        9,
+        (error: string) => console.log(error),
+      );
+    }
   };
 
   useEffect(() => {
@@ -60,11 +63,13 @@ export default ({
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      {isWakeCalled ? (
-        <Text>Server Is Starting</Text>
-      ) : (
-        <Button title={'Start Server'} onPress={startServer} />
-      )}
+      <Button
+        icon="power"
+        mode={isWakeCalled ? 'contained-tonal' : 'contained'}
+        loading={isWakeCalled}
+        onPress={startServer}>
+        Start Server
+      </Button>
     </View>
   );
 };

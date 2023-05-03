@@ -1,5 +1,6 @@
 import {useContext, useEffect} from 'react';
-import {Text, View, BackHandler} from 'react-native';
+import {View, BackHandler} from 'react-native';
+import {ActivityIndicator, Text} from 'react-native-paper';
 import {Application} from '../../Models/Application';
 import AppContext from '../../AppContext';
 import {AxiosClient} from '../../Utils/AxiosClient';
@@ -45,6 +46,11 @@ export default ({
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>Vérification de l'état du serveur</Text>
+      <ActivityIndicator
+        animating={true}
+        size="large"
+        style={{marginTop: 40}}
+      />
     </View>
   );
 };
