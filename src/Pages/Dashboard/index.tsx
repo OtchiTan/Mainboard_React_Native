@@ -1,13 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {BackHandler, FlatList} from 'react-native';
+import {BackHandler, FlatList, StyleSheet, View} from 'react-native';
 import AppContext from '../../AppContext';
 import {Application} from '../../Models/Application';
 import AppLayout from './Components/AppLayout';
 import {AxiosClient} from '../../Utils/AxiosClient';
-import {io} from 'socket.io-client';
 import {NavigationProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
 import {SocketClient} from '../../Utils/SocketClient';
+import Appbar from './Components/Appbar';
+import {Button, Modal, Portal} from 'react-native-paper';
+import StopModal from './Components/StopModal';
 
 type ResponseAPI = {
   applications: Application[];
@@ -19,6 +21,7 @@ export default ({
   navigation: NavigationProp<RoutesList>;
 }): JSX.Element => {
   const {apps, setApps, onNeedLogin} = useContext(AppContext);
+  const [modalVisible, setModalVisible] = useState(false);
   const [socket] = useState<SocketClient>(() => new SocketClient(navigation));
 
   useEffect(() => {
@@ -52,18 +55,30 @@ export default ({
     else navigation.navigate('CustomApplication', {app});
   };
 
+  const hideModal = () => setModalVisible(false);
+  const showModal = () => setModalVisible(true);
+
   return (
-    <FlatList
-      data={apps}
-      renderItem={({item}) => <AppLayout item={item} onPress={onItemPress} />}
-      keyExtractor={app => app.name}
-      numColumns={2}
-      style={{flex: 1}}
-      contentContainerStyle={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1,
-      }}
-    />
+    <View style={styles.page}>
+      <Appbar navigation={navigation} onShowModal={showModal} />
+
+      <StopModal visible={modalVisible} onClose={hideModal} />
+
+      <FlatList
+        data={apps}
+        renderItem={({item}) => <AppLayout item={item} onPress={onItemPress} />}
+        keyExtractor={app => app.name}
+        numColumns={2}
+        contentContainerStyle={styles.contentContainer}
+      />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  page: {flex: 1},
+  contentContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

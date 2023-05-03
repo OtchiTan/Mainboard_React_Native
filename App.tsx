@@ -8,10 +8,7 @@
 import React, {useState} from 'react';
 import {Application} from './src/Models/Application';
 import {NavigationContainer} from '@react-navigation/native';
-import {
-  NativeStackNavigationOptions,
-  createNativeStackNavigator,
-} from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AppContext from './src/AppContext';
 import Dashboard from './src/Pages/Dashboard';
 import CheckServer from './src/Pages/CheckServer';
@@ -20,8 +17,6 @@ import StartServer from './src/Pages/StartServer';
 import ContainerApplication from './src/Pages/ContainerApplication';
 import CustomApplication from './src/Pages/CustomApplication';
 import {setToken} from './src/Utils/AuthStorage';
-import {Button, Modal, Text} from 'react-native';
-import StopModal from './src/Pages/Dashboard/Components/StopModal';
 import Register from './src/Pages/Register';
 import {RoutesList} from './src/Utils/Declarations';
 import {Provider as PaperProvider} from 'react-native-paper';
@@ -31,21 +26,10 @@ const Stack = createNativeStackNavigator<RoutesList>();
 function App(): JSX.Element {
   const [apps, setApps] = useState<Application[]>([]);
   const [authToken, setAuthToken] = useState<string>('');
-  const [stopModalVisibility, setStopModalVisibility] =
-    useState<boolean>(false);
 
   const setNewAuthToken = async (newToken: string) => {
     await setToken(newToken);
     setAuthToken(newToken);
-  };
-
-  const dashboardHeaderOptions: NativeStackNavigationOptions = {
-    headerShown: true,
-    headerBackVisible: false,
-    headerRight: () => (
-      <Button title="Stop" onPress={() => setStopModalVisibility(true)} />
-    ),
-    title: 'Mainboard',
   };
 
   return (
@@ -65,25 +49,12 @@ function App(): JSX.Element {
               this.navigator = newNavigator;
             },
           }}>
-          <Modal
-            visible={stopModalVisibility}
-            animationType="fade"
-            transparent={true}
-            onRequestClose={() => setStopModalVisibility(false)}
-            children={
-              <StopModal onClose={() => setStopModalVisibility(false)} />
-            }
-          />
           <Stack.Navigator
             initialRouteName="CheckServer"
             screenOptions={{
               headerShown: false,
             }}>
-            <Stack.Screen
-              name="Dashboard"
-              component={Dashboard}
-              options={dashboardHeaderOptions}
-            />
+            <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="CheckServer" component={CheckServer} />
             <Stack.Screen name="StartServer" component={StartServer} />
             <Stack.Screen
