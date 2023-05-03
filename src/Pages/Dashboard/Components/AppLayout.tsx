@@ -18,7 +18,7 @@ export default ({item, onPress}: IAppLayout) => {
     onPress(item);
   };
 
-  var width = Dimensions.get('window').width;
+  var {width} = Dimensions.get('window');
 
   return (
     <Pressable

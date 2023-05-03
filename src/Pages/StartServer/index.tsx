@@ -67,7 +67,7 @@ export default ({
         icon="power"
         mode={isWakeCalled ? 'contained-tonal' : 'contained'}
         loading={isWakeCalled}
-        onPress={startServer}>
+        onPress={isWakeCalled ? undefined : startServer}>
         Start Server
       </Button>
     </View>

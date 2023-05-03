@@ -1,14 +1,14 @@
-import {BackHandler, Button, Image, Text, View} from 'react-native';
+import {BackHandler, Image, Text, View} from 'react-native';
 import {useState, useContext, useEffect} from 'react';
 import {StartAppResponse} from './Declarations';
 import AppContext from '../../AppContext';
 import {StyleSheet, Dimensions} from 'react-native';
 import {AppStatus, Application} from '../../Models/Application';
 import {AxiosClient} from '../../Utils/AxiosClient';
-import {io} from 'socket.io-client';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
 import {SocketClient} from '../../Utils/SocketClient';
+import {Button} from 'react-native-paper';
 
 type RouteParam = {ContainerApplication: {app: Application}};
 
@@ -67,9 +67,7 @@ export default ({
 
         axiosClient
           .get<StartAppResponse>(`${action}App/${app.id}`)
-          .then(({data}) => {
-            setApps(data.apps);
-            setApp(data.updatedApp);
+          .then(() => {
             setIsStarting(false);
           })
           .catch(error => {
@@ -110,7 +108,7 @@ export default ({
           source={{uri: app.image}}
           style={{width: width * 0.2, height: width * 0.2}}
         />
-        <View style={{...styles.headText, width: width * 0.6}}>
+        <View style={{...styles.headText, width: width / 2.5}}>
           <Text style={styles.title}>{app.name}</Text>
           {app.status === AppStatus.ONLINE && app.startTime && (
             <Text>{lifeTimeText}</Text>
@@ -119,23 +117,18 @@ export default ({
       </View>
       <View style={styles.startButton}>
         <Button
-          title={
-            app.status === AppStatus.ONLINE
-              ? 'Stop'
-              : app.status === AppStatus.OFFLINE
-              ? 'Start'
-              : 'Starting'
+          mode={
+            app.status === AppStatus.PENDING ? 'contained-tonal' : 'contained'
           }
-          color={
-            app.status === AppStatus.ONLINE
-              ? 'red'
-              : app.status === AppStatus.OFFLINE
-              ? 'green'
-              : '#E1AD01'
-          }
-          onPress={startApp}
-          disabled={isStarting || app.status === AppStatus.PENDING}
-        />
+          icon="power"
+          loading={app.status === AppStatus.PENDING}
+          onPress={app.status === AppStatus.PENDING ? undefined : startApp}>
+          {app.status === AppStatus.ONLINE
+            ? 'Stop'
+            : app.status === AppStatus.OFFLINE
+            ? 'Start'
+            : 'Starting'}
+        </Button>
       </View>
     </View>
   );
