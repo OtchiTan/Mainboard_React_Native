@@ -1,7 +1,8 @@
-import {Button, Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {Vol} from './Declarations';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {AxiosClient} from '../../../../Utils/AxiosClient';
+import {IconButton} from 'react-native-paper';
 
 type ILayout = {
   vol: Vol;
@@ -30,13 +31,13 @@ export default ({vol}: ILayout) => {
 
   return (
     <View style={styles.container}>
-      <Button title="-" color="red" onPress={deleteVol} />
+      <IconButton icon="minus" mode="outlined" onPress={deleteVol} />
       <Image
         source={{uri: actualVol.chest.image}}
         style={{height: 50, width: 50}}
       />
       <Text>{actualVol.count}</Text>
-      <Button title="+" color="green" onPress={addVol} />
+      <IconButton icon="plus" mode="contained" onPress={addVol} />
     </View>
   );
 };

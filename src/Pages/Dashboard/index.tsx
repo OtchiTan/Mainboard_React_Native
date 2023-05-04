@@ -8,7 +8,7 @@ import {NavigationProp} from '@react-navigation/native';
 import {RoutesList} from '../../Utils/Declarations';
 import {SocketClient} from '../../Utils/SocketClient';
 import Appbar from './Components/Appbar';
-import {Button, Modal, Portal} from 'react-native-paper';
+import {Button, Modal, Portal, useTheme} from 'react-native-paper';
 import StopModal from './Components/StopModal';
 
 type ResponseAPI = {

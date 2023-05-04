@@ -1,18 +1,9 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {NavigationProp} from '@react-navigation/native';
-import {Dimensions, BackHandler} from 'react-native';
-import {
-  Appbar,
-  Button,
-  Menu,
-  Modal,
-  Portal,
-  Provider,
-  Text,
-} from 'react-native-paper';
+import {Dimensions, View} from 'react-native';
+import {Appbar, Menu, Provider} from 'react-native-paper';
 import {RoutesList} from '../../../Utils/Declarations';
 import {clearToken} from '../../../Utils/AuthStorage';
-import {AxiosClient} from '../../../Utils/AxiosClient';
 
 type AppbarType = {
   navigation: NavigationProp<RoutesList>;
@@ -47,14 +38,6 @@ export default ({navigation, onShowModal}: AppbarType) => {
     navigation.navigate('Login');
   };
 
-  const stopServer = () => {
-    new AxiosClient()
-      .get('shutdown')
-      .then(res => {})
-      .catch(error => {});
-    BackHandler.exitApp();
-  };
-
   return (
     <Provider>
       <Appbar.Header>
@@ -64,7 +47,7 @@ export default ({navigation, onShowModal}: AppbarType) => {
       <Menu
         visible={menuVisible}
         onDismiss={closeMenu}
-        anchor={{x: width, y: 1}}>
+        anchor={{x: width, y: 0}}>
         <Menu.Item onPress={logout} leadingIcon="logout" title="Logout" />
         <Menu.Item
           onPress={showModal}

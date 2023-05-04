@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import {AppStatus, Application} from '../../../Models/Application';
+import {useTheme} from 'react-native-paper';
 
 type IAppLayout = {
   item: Application;
@@ -20,12 +21,14 @@ export default ({item, onPress}: IAppLayout) => {
 
   var {width} = Dimensions.get('window');
 
+  const {dark, colors} = useTheme();
+
   return (
     <Pressable
       onPress={onPressCallback}
       style={({pressed}) => [
         {
-          backgroundColor: pressed ? 'black' : 'white',
+          backgroundColor: pressed ? 'black' : colors.onSecondary,
           borderColor:
             item.status === AppStatus.OFFLINE
               ? 'red'
@@ -41,7 +44,7 @@ export default ({item, onPress}: IAppLayout) => {
         {item.image && (
           <Image source={{uri: item.image}} style={styles.image} />
         )}
-        <Text>{item.name}</Text>
+        <Text style={{color: dark ? 'white' : 'black'}}>{item.name}</Text>
       </View>
     </Pressable>
   );
