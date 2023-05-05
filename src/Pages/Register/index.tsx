@@ -28,6 +28,7 @@ export default ({
     password: '',
     confirmPassword: '',
   });
+  const [registerError, setRegisterError] = useState<boolean>(false);
 
   const {setAuthToken} = useContext(AppContext);
   var {width} = Dimensions.get('window');
@@ -55,15 +56,24 @@ export default ({
   }, []);
 
   const handleSubmit = async () => {
-    new AxiosClient()
-      .post<ResponseAPI>('auth/register', registerForm)
-      .then(({data}) => {
-        setAuthToken(data.authToken);
-        navigation.navigate('Dashboard');
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    if (
+      registerForm.email !== '' &&
+      registerForm.username !== '' &&
+      registerForm.password !== '' &&
+      registerForm.confirmPassword !== ''
+    ) {
+      new AxiosClient()
+        .post<ResponseAPI>('auth/register', registerForm)
+        .then(({data}) => {
+          setAuthToken(data.authToken);
+          navigation.navigate('Dashboard');
+        })
+        .catch(error => {
+          setRegisterError(true);
+        });
+    } else {
+      setRegisterError(true);
+    }
   };
 
   const openLogin = () => {
@@ -83,6 +93,7 @@ export default ({
               return {...loginForm, email};
             })
           }
+          error={registerError}
           style={{...styles.input, width: width / 1.5}}
           value={registerForm.email}
         />
@@ -93,6 +104,7 @@ export default ({
               return {...loginForm, username};
             })
           }
+          error={registerError}
           style={{...styles.input, width: width / 1.5}}
           value={registerForm.username}
         />
@@ -103,6 +115,7 @@ export default ({
               return {...loginForm, password};
             })
           }
+          error={registerError}
           style={{...styles.input, width: width / 1.5}}
           secureTextEntry={true}
           onSubmitEditing={handleSubmit}
@@ -116,10 +129,12 @@ export default ({
             })
           }
           style={{...styles.input, width: width / 1.5}}
+          error={registerError}
           secureTextEntry={true}
           onSubmitEditing={handleSubmit}
           value={registerForm.confirmPassword}
         />
+        {registerError && <Text style={{color: 'red'}}>Invalid form</Text>}
         <Button
           mode="contained"
           style={{...styles.button, width: width / 2}}

@@ -31,6 +31,7 @@ export default ({
     email: '',
     password: '',
   });
+  const [loginError, setLoginError] = useState<boolean>(false);
 
   const passwordInput = useRef<TextInputType>(null);
   const {setAuthToken} = useContext(AppContext);
@@ -54,15 +55,17 @@ export default ({
   }, []);
 
   const handleSubmit = async () => {
-    new AxiosClient()
-      .post<ResponseAPI>('auth/login', loginForm)
-      .then(({data}) => {
-        setAuthToken(data.authToken);
-        navigation.navigate('Dashboard');
-      })
-      .catch(error => {
-        console.log(JSON.stringify(error, null, 2));
-      });
+    if (loginForm.email !== '' && loginForm.password !== '') {
+      new AxiosClient()
+        .post<ResponseAPI>('auth/login', loginForm)
+        .then(({data}) => {
+          setAuthToken(data.authToken);
+          navigation.navigate('Dashboard');
+        })
+        .catch(error => {
+          setLoginError(true);
+        });
+    }
   };
 
   const openRegister = () => {
@@ -82,6 +85,7 @@ export default ({
               return {...loginForm, email};
             })
           }
+          error={loginError}
           style={{...styles.input, width: width / 1.5}}
           onSubmitEditing={passwordInput.current?.focus}
           value={loginForm.email}
@@ -94,11 +98,15 @@ export default ({
               return {...loginForm, password};
             })
           }
+          error={loginError}
           style={{...styles.input, width: width / 1.5}}
           secureTextEntry={true}
           onSubmitEditing={handleSubmit}
           value={loginForm.password}
         />
+        {loginError && (
+          <Text style={{color: 'red'}}>Email or Password invalid</Text>
+        )}
         <Button
           mode="contained"
           style={{...styles.button, width: width / 2}}
