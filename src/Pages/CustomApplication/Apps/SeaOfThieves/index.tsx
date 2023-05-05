@@ -1,15 +1,19 @@
-import {View, Text, StyleSheet, NativeModules, FlatList} from 'react-native';
-import {useEffect, useContext, useState} from 'react';
+import {View, StyleSheet, FlatList} from 'react-native';
+import {useEffect, useState} from 'react';
 import {ResponseAPI, Vol} from './Declarations';
 import Layout from './Layout';
 import {AxiosClient} from '../../../../Utils/AxiosClient';
-import {Button, ToggleButton} from 'react-native-paper';
+import {ToggleButton} from 'react-native-paper';
 import Carousel from './Carousel';
+
+enum ViewType {
+  CAROUSEL = 'CAROUSEL',
+  LIST = 'LIST',
+}
 
 export default () => {
   const [vols, setVols] = useState<Vol[]>([]);
-  const [viewCarousel, setViewCarousel] = useState<boolean>(false);
-  const [viewType, setViewType] = useState<'carousel' | 'list'>('carousel');
+  const [viewType, setViewType] = useState<ViewType>(ViewType.CAROUSEL);
 
   useEffect(() => {
     new AxiosClient()
@@ -53,13 +57,15 @@ export default () => {
           marginBottom: 20,
         }}>
         <ToggleButton.Row
-          onValueChange={value => setViewType(value as 'carousel' | 'list')}
+          onValueChange={value => {
+            if (value) setViewType(value as ViewType);
+          }}
           value={viewType}>
-          <ToggleButton icon="format-list-bulleted" value="list" />
-          <ToggleButton icon="view-carousel" value="carousel" />
+          <ToggleButton icon="format-list-bulleted" value={ViewType.LIST} />
+          <ToggleButton icon="view-carousel" value={ViewType.CAROUSEL} />
         </ToggleButton.Row>
       </View>
-      {viewType === 'carousel' ? (
+      {viewType === ViewType.CAROUSEL ? (
         <Carousel vols={vols} addVol={addVol} deleteVol={deleteVol} />
       ) : (
         <FlatList
